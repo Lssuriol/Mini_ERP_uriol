@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 from nucleo.decoradores import solo_administrador
 
-from ..forms import FormularioEdicionUsuario, FormularioUsuario
+from ..forms import FormularioCambioPasswordAdmin, FormularioEdicionUsuario, FormularioUsuario
 from ..models import Usuario
 
 
@@ -71,3 +71,21 @@ def alternar_estado_usuario(request, usuario_id):
 def mi_perfil(request):
     """Muestra la información del perfil del usuario autenticado."""
     return render(request, 'usuarios/mi_perfil.html', {'usuario': request.user})
+
+
+@solo_administrador
+def cambiar_password_usuario(request, usuario_id):
+    """Permite al administrador cambiar la contraseña de otro usuario."""
+    usuario = get_object_or_404(Usuario, pk=usuario_id)
+
+    if request.method == 'POST':
+        formulario = FormularioCambioPasswordAdmin(usuario, request.POST)
+        if formulario.is_valid():
+            formulario.save()
+            messages.success(request, f'La contraseña de "{usuario.username}" ha sido actualizada correctamente.')
+            return redirect('usuarios:lista_usuarios')
+    else:
+        formulario = FormularioCambioPasswordAdmin(usuario)
+
+    contexto = {'formulario': formulario, 'titulo': f'Cambiar contraseña: {usuario.username}', 'usuario_editado': usuario}
+    return render(request, 'usuarios/formulario_password.html', contexto)

@@ -1,6 +1,7 @@
 from .autenticacion import VistaIniciarSesion, cerrar_sesion
 from .gestion import (
     alternar_estado_usuario,
+    cambiar_password_usuario,
     crear_usuario,
     editar_usuario,
     lista_usuarios,
@@ -13,6 +14,7 @@ __all__ = [
     'lista_usuarios',
     'crear_usuario',
     'editar_usuario',
+    'cambiar_password_usuario',
     'alternar_estado_usuario',
     'mi_perfil',
 ]

@@ -1,7 +1,7 @@
 """Formularios relacionados a la autenticación y gestión de usuarios."""
 
 from django import forms
-from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, SetPasswordForm, UserCreationForm
 
 from .models import Usuario
 
@@ -55,3 +55,12 @@ class FormularioEdicionUsuario(forms.ModelForm):
             'telefono': forms.TextInput(attrs={'class': 'campo-formulario'}),
             'rol': forms.Select(attrs={'class': 'campo-formulario'}),
         }
+
+
+class FormularioCambioPasswordAdmin(SetPasswordForm):
+    """Formulario para que el administrador cambie la contraseña de otro usuario."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({'class': 'campo-formulario'})

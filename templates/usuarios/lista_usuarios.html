@@ -35,6 +35,7 @@
                     </td>
                     <td class="celda-acciones">
                         <a href="{% url 'usuarios:editar_usuario' usuario_item.id %}" class="boton boton--secundario boton--pequeno">Editar</a>
+                        <a href="{% url 'usuarios:cambiar_password_usuario' usuario_item.id %}" class="boton boton--secundario boton--pequeno">Cambiar clave</a>
                         <form method="post" action="{% url 'usuarios:alternar_estado_usuario' usuario_item.id %}" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="boton boton--secundario boton--pequeno">
