@@ -30,11 +30,23 @@ Permite administrar un catálogo de productos, controlar stock en tiempo real me
 
 ---
 
+## 🔌 Integraciones y APIs Externas
+
+Este sistema hace uso de diversas plataformas y APIs de terceros para funcionar eficientemente y automatizar procesos:
+
+* **Supabase (PostgreSQL):** Base de datos relacional principal en producción.
+* **Supabase Storage (API S3):** Almacenamiento en la nube (Object Storage) para guardar y distribuir las imágenes de los productos del catálogo.
+* **APIs Perú (dniruc.apisperu.com):** Servicio para consultar automáticamente los datos de clientes ingresando su número de DNI o RUC desde el Punto de Venta.
+* **NubeFact:** API de facturación electrónica para enviar los comprobantes emitidos (Boletas/Facturas) a SUNAT de manera automática.
+* **Brevo (anteriormente Sendinblue):** Servidor SMTP transaccional para el envío de comprobantes electrónicos a los correos de los clientes.
+
+---
+
 ## 🚀 Guía de Instalación (Entorno de Desarrollo)
 
 ### 1. Clonar el repositorio y preparar el entorno
 ```bash
-git clone https://github.com/tu-usuario/uriol_erp.git
+git clone https://github.com/Lssuriol/Mini_ERP_uriol.git
 cd uriol_erp
 python -m venv venv
 ```

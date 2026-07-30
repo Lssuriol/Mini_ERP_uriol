@@ -48,6 +48,9 @@ INSTALLED_APPS = [
 # ---------------------------------------------------------------------------
 NUBEFACT_URL = config('NUBEFACT_URL', default='https://api.nubefact.com/api/v1/fe/comprobantes')
 NUBEFACT_TOKEN = config('NUBEFACT_TOKEN', default='')
+
+APIPERU_TOKEN = config('APIPERU_TOKEN', default='')
+
 SERIE_BOLETA = config('SERIE_BOLETA', default='B001')
 SERIE_FACTURA = config('SERIE_FACTURA', default='F001')
 

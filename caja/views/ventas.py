@@ -118,17 +118,51 @@ def consultar_documento(request):
         return JsonResponse({'exito': False, 'mensaje': 'El documento debe tener 8 (DNI) o 11 (RUC) dígitos numéricos.'})
     
     endpoint = 'ruc' if len(numero) == 11 else 'dni'
-    url = f'https://api.apis.net.pe/v1/{endpoint}?numero={numero}'
+    
+    # Obtener el token desde las configuraciones
+    from django.conf import settings
+    token = getattr(settings, 'APIPERU_TOKEN', '')
+    
+    url = f'https://dniruc.apisperu.com/api/v1/{endpoint}/{numero}?token={token}'
     
     try:
-        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        headers = {
+            'User-Agent': 'Mozilla/5.0',
+            'Accept': 'application/json'
+        }
+        req = urllib.request.Request(url, headers=headers)
+        
         with urllib.request.urlopen(req, timeout=5) as response:
             data = json.loads(response.read().decode('utf-8'))
-            return JsonResponse({'exito': True, 'nombre': data.get('nombre', '')})
+            
+            # apisperu.com puede retornar directamente el objeto o un wrapper
+            # Tratamos de extraer el nombre basado en posibles formatos
+            nombre = ''
+            
+            if endpoint == 'dni':
+                if 'nombres' in data and 'apellidoPaterno' in data:
+                    nombre = f"{data.get('nombres', '')} {data.get('apellidoPaterno', '')} {data.get('apellidoMaterno', '')}".strip()
+                elif 'nombre' in data:
+                    nombre = data['nombre']
+                elif 'nombre_completo' in data:
+                    nombre = data['nombre_completo']
+            else:
+                if 'razonSocial' in data:
+                    nombre = data['razonSocial']
+                elif 'nombre_o_razon_social' in data:
+                    nombre = data['nombre_o_razon_social']
+                elif 'nombre' in data:
+                    nombre = data['nombre']
+                    
+            if nombre:
+                return JsonResponse({'exito': True, 'nombre': nombre})
+            else:
+                return JsonResponse({'exito': False, 'mensaje': 'Documento no encontrado.'})
+                
     except urllib.error.HTTPError as e:
         if e.code == 404:
             return JsonResponse({'exito': False, 'mensaje': 'Documento no encontrado.'})
-        return JsonResponse({'exito': False, 'mensaje': 'Error de conexión con el servicio externo.'})
+        return JsonResponse({'exito': False, 'mensaje': 'Error de conexión o Token inválido.'})
     except Exception:
         return JsonResponse({'exito': False, 'mensaje': 'Error de conexión con el servicio externo.'})
 
