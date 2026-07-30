@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}Página no encontrada{% endblock %}
+{% block titulo_pagina %}Error 404 - No Encontrado{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta" style="text-align: center; padding: 40px 20px; max-width: 600px; margin: 0 auto; margin-top: 40px;">
+    
+    <div style="font-size: 64px; color: var(--color-texto-secundario); margin-bottom: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+    </div>
+    
+    <h2 style="color: var(--color-texto); margin-bottom: 15px; font-size: 1.5rem;">Página no encontrada</h2>
+    
+    <p class="texto-secundario" style="margin-bottom: 30px; font-size: 1.1rem; line-height: 1.5;">
+        Lo sentimos, la página a la que intentas acceder no existe, ha sido movida o la dirección es incorrecta.
+    </p>
+    
+    <div>
+        <a href="{% url 'reportes:panel_principal' %}" class="boton boton--primario">Volver al Panel Principal</a>
+    </div>
+</div>
+{% endblock %}

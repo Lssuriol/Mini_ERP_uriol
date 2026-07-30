@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}Error interno del servidor{% endblock %}
+{% block titulo_pagina %}Error 500 - Error del Servidor{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta" style="text-align: center; padding: 40px 20px; max-width: 600px; margin: 0 auto; margin-top: 40px;">
+    
+    <div style="font-size: 64px; color: var(--color-peligro); margin-bottom: 20px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+    </div>
+    
+    <h2 style="color: var(--color-texto); margin-bottom: 15px; font-size: 1.5rem;">Ocurrió un error inesperado</h2>
+    
+    <p class="texto-secundario" style="margin-bottom: 30px; font-size: 1.1rem; line-height: 1.5;">
+        Lo sentimos, el servidor encontró un problema interno y no pudo completar tu solicitud. 
+        Nuestro equipo ha sido notificado. Por favor, intenta de nuevo más tarde.
+    </p>
+    
+    <div>
+        <a href="{% url 'reportes:panel_principal' %}" class="boton boton--primario">Volver al Panel Principal</a>
+    </div>
+</div>
+{% endblock %}
