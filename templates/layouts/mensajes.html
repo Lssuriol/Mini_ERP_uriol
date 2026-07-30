@@ -1,0 +1,7 @@
+{% if messages %}
+<div class="mensajes-formulario">
+    {% for mensaje in messages %}
+        <div class="alerta alerta--{{ mensaje.tags }}">{{ mensaje }}</div>
+    {% endfor %}
+</div>
+{% endif %}

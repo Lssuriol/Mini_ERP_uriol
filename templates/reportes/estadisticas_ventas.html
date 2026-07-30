@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% block titulo %}Estadísticas{% endblock %}
+{% block titulo_pagina %}Estadísticas de ventas{% endblock %}
+
+{% block contenido %}
+<!-- KPIs históricos -->
+<div class="cuadricula cuadricula--4" style="margin-bottom: var(--espacio-lg);">
+    <div class="tarjeta-kpi tarjeta-kpi--acento" title="Suma de todas las ventas completadas desde que se empezó a usar el sistema">
+        <p class="tarjeta-kpi__etiqueta">Total vendido (histórico)</p>
+        <p class="tarjeta-kpi__valor">S/ {{ total_vendido_global|floatformat:2 }}</p>
+    </div>
+    <div class="tarjeta-kpi" title="Cantidad total histórica de comprobantes emitidos (solo completados)">
+        <p class="tarjeta-kpi__etiqueta">N° total de ventas</p>
+        <p class="tarjeta-kpi__valor">{{ cantidad_ventas_global }}</p>
+    </div>
+    <div class="tarjeta-kpi" title="Promedio histórico de gasto por venta (Total vendido histórico ÷ N° total de ventas)">
+        <p class="tarjeta-kpi__etiqueta">Ticket promedio</p>
+        <p class="tarjeta-kpi__valor">S/ {{ ticket_promedio_global }}</p>
+    </div>
+    <div class="tarjeta-kpi tarjeta-kpi--exito" title="Ingresos totales menos el costo total de los productos vendidos (según el precio de compra que registraste)">
+        <p class="tarjeta-kpi__etiqueta">Ganancia estimada</p>
+        <p class="tarjeta-kpi__valor">S/ {{ ganancia_estimada|floatformat:2 }}</p>
+    </div>
+</div>
+
+<!-- Gráfico de tendencia 30 días -->
+<div class="tarjeta" style="margin-bottom: var(--espacio-lg);">
+    <h3 class="tarjeta__titulo">Tendencia de ventas — Últimos 30 días</h3>
+    <div style="position: relative; height: 300px;">
+        <canvas id="grafico-30-dias"></canvas>
+    </div>
+</div>
+
+<!-- Gráficos en cuadrícula 2x2 -->
+<div class="cuadricula cuadricula--2" style="margin-bottom: var(--espacio-lg);">
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Distribución por método de pago</h3>
+        <div style="position: relative; height: 280px; display: flex; justify-content: center;">
+            <canvas id="grafico-metodo-pago"></canvas>
+        </div>
+    </div>
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Ventas por categoría</h3>
+        <div style="position: relative; height: 280px; display: flex; justify-content: center;">
+            <canvas id="grafico-categorias"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="tarjeta" style="margin-bottom: var(--espacio-lg);">
+    <h3 class="tarjeta__titulo">Top 10 — Productos más vendidos</h3>
+    <div style="position: relative; height: 350px;">
+        <canvas id="grafico-top-productos"></canvas>
+    </div>
+</div>
+
+<!-- Tablas detalladas -->
+<div class="cuadricula cuadricula--2">
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Detalle — Productos más vendidos</h3>
+        <div class="tabla-envoltorio">
+            <table class="tabla-datos">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th class="celda-numerica">Unidades</th>
+                        <th class="celda-numerica">Monto total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos_mas_vendidos %}
+                    <tr>
+                        <td>{{ producto.producto__nombre }}</td>
+                        <td>{{ producto.producto__categoria__nombre }}</td>
+                        <td class="celda-numerica">{{ producto.unidades_vendidas }}</td>
+                        <td class="celda-numerica">S/ {{ producto.monto_total }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" class="tabla-vacia">Aún no hay ventas registradas.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Detalle — Productos menos vendidos</h3>
+        <div class="tabla-envoltorio">
+            <table class="tabla-datos">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Categoría</th>
+                        <th class="celda-numerica">Unidades</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos_menos_vendidos %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td>{{ producto.categoria.nombre|default:"-" }}</td>
+                        <td class="celda-numerica">{{ producto.unidades_vendidas }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="tabla-vacia">No hay productos registrados.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Ventas por método de pago</h3>
+        <div class="tabla-envoltorio">
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Método de pago</th><th class="celda-numerica">N° ventas</th><th class="celda-numerica">Total</th></tr>
+                </thead>
+                <tbody>
+                    {% for metodo in ventas_por_metodo_pago %}
+                    <tr>
+                        <td>{{ metodo.metodo_pago }}</td>
+                        <td class="celda-numerica">{{ metodo.cantidad }}</td>
+                        <td class="celda-numerica">S/ {{ metodo.total|floatformat:2 }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="tabla-vacia">Aún no hay ventas registradas.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Ventas anuladas</h3>
+        <div class="cuadricula cuadricula--2">
+            <div class="tarjeta-kpi tarjeta-kpi--peligro" title="Monto total histórico de ventas que fueron anuladas">
+                <p class="tarjeta-kpi__etiqueta">Total anulado</p>
+                <p class="tarjeta-kpi__valor">S/ {{ total_anulado|floatformat:2 }}</p>
+            </div>
+            <div class="tarjeta-kpi tarjeta-kpi--peligro" title="Cantidad total histórica de comprobantes que fueron anulados">
+                <p class="tarjeta-kpi__etiqueta">N° ventas anuladas</p>
+                <p class="tarjeta-kpi__valor">{{ cantidad_anuladas }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Paleta de colores para gráficos tipo dona/pie
+    var PALETA = [
+        '#10243e', '#1b3a63', '#c8791a', '#2d6a4f', '#457b9d',
+        '#e76f51', '#264653', '#a3620f', '#6c757d', '#3a506b',
+        '#5e60ce', '#48bfe3', '#f4845f', '#7b2d8e', '#2ec4b6'
+    ];
+
+    // ========== GRÁFICO 1: Tendencia 30 días (línea) ==========
+    new Chart(document.getElementById('grafico-30-dias'), {
+        type: 'line',
+        data: {
+            labels: {{ grafico_30d_etiquetas|safe }},
+            datasets: [{
+                label: 'Ventas diarias (S/)',
+                data: {{ grafico_30d_datos|safe }},
+                borderColor: '#10243e',
+                backgroundColor: 'rgba(16, 36, 62, 0.1)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 3,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#10243e',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) { return 'S/ ' + ctx.parsed.y.toFixed(2); }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { callback: function(v) { return 'S/ ' + v; } }
+                },
+                x: {
+                    ticks: { maxRotation: 45, minRotation: 0 }
+                }
+            }
+        }
+    });
+
+    // ========== GRÁFICO 2: Método de pago (dona) ==========
+    new Chart(document.getElementById('grafico-metodo-pago'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ grafico_metodo_etiquetas|safe }},
+            datasets: [{
+                data: {{ grafico_metodo_datos|safe }},
+                backgroundColor: PALETA,
+                borderWidth: 2,
+                borderColor: '#ffffff',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 15 } },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                            var pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+                            return ctx.label + ': S/ ' + ctx.parsed.toFixed(2) + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // ========== GRÁFICO 3: Categorías (dona) ==========
+    new Chart(document.getElementById('grafico-categorias'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ grafico_cat_etiquetas|safe }},
+            datasets: [{
+                data: {{ grafico_cat_datos|safe }},
+                backgroundColor: PALETA,
+                borderWidth: 2,
+                borderColor: '#ffffff',
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 15 } },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) {
+                            var total = ctx.dataset.data.reduce(function(a, b) { return a + b; }, 0);
+                            var pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
+                            return ctx.label + ': S/ ' + ctx.parsed.toFixed(2) + ' (' + pct + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // ========== GRÁFICO 4: Top 10 productos (barras horizontales) ==========
+    new Chart(document.getElementById('grafico-top-productos'), {
+        type: 'bar',
+        data: {
+            labels: {{ grafico_top_nombres|safe }},
+            datasets: [{
+                label: 'Unidades vendidas',
+                data: {{ grafico_top_unidades|safe }},
+                backgroundColor: 'rgba(200, 121, 26, 0.8)',
+                borderColor: '#c8791a',
+                borderWidth: 1,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+            },
+            scales: {
+                x: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

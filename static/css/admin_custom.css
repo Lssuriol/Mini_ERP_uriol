@@ -1,0 +1,89 @@
+/* Customización del tema nativo de Django Admin */
+
+/* Variables para el tema claro */
+:root, [data-theme="light"] {
+    --primary: #10243e;
+    --secondary: #1b3a63;
+    --accent: #c8791a;
+    --primary-fg: #ffffff;
+    
+    --button-bg: #10243e;
+    --button-hover-bg: #1b3a63;
+    --default-button-bg: #c8791a;
+    --default-button-hover-bg: #a3620f;
+    
+    --link-fg: #1b3a63;
+    --link-hover-fg: #c8791a;
+    --link-selected-fg: #c8791a;
+    
+    --header-bg: #10243e;
+    --header-color: #ffffff;
+    --header-link-color: #ffffff;
+
+    --breadcrumbs-bg: #1b3a63;
+    --breadcrumbs-fg: #cbd5e1;
+    --breadcrumbs-link-fg: #ffffff;
+
+    --border-radius: 0px;
+    --font-family-primary: 'Segoe UI', Arial, Helvetica, sans-serif;
+}
+
+/* Variables para el tema oscuro */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #10243e;
+        --secondary: #1b3a63;
+        --accent: #c8791a;
+        --primary-fg: #ffffff;
+        
+        --button-bg: #10243e;
+        --button-hover-bg: #1b3a63;
+        --default-button-bg: #c8791a;
+        --default-button-hover-bg: #a3620f;
+        
+        --link-fg: #4c9aff;
+        --link-hover-fg: #c8791a;
+        --link-selected-fg: #c8791a;
+
+        --header-bg: #10243e;
+        --header-color: #ffffff;
+        --header-link-color: #ffffff;
+
+        --breadcrumbs-bg: #1b3a63;
+        --breadcrumbs-fg: #cbd5e1;
+        --breadcrumbs-link-fg: #ffffff;
+    }
+}
+
+[data-theme="dark"] {
+    --primary: #10243e;
+    --secondary: #1b3a63;
+    --accent: #c8791a;
+    --primary-fg: #ffffff;
+    
+    --button-bg: #10243e;
+    --button-hover-bg: #1b3a63;
+    --default-button-bg: #c8791a;
+    --default-button-hover-bg: #a3620f;
+    
+    --link-fg: #4c9aff;
+    --link-hover-fg: #c8791a;
+    --link-selected-fg: #c8791a;
+
+    --header-bg: #10243e;
+    --header-color: #ffffff;
+    --header-link-color: #ffffff;
+
+    --breadcrumbs-bg: #1b3a63;
+    --breadcrumbs-fg: #cbd5e1;
+    --breadcrumbs-link-fg: #ffffff;
+}
+
+/* Redondear botones y paneles a cero como en Uriol ERP */
+input[type="submit"], input[type="button"], button, .button {
+    border-radius: 0 !important;
+}
+
+.module {
+    border-radius: 0 !important;
+}

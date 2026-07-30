@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block titulo %}Mi perfil{% endblock %}
+{% block titulo_pagina %}Mi perfil{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta" style="max-width: 480px;">
+    <h3 class="tarjeta__titulo">Datos de la cuenta</h3>
+    <p><strong>Usuario:</strong> {{ usuario.username }}</p>
+    <p><strong>Nombre completo:</strong> {{ usuario.get_full_name|default:'—' }}</p>
+    <p><strong>Correo:</strong> {{ usuario.email|default:'—' }}</p>
+    <p><strong>Rol:</strong> <span class="etiqueta etiqueta--info">{{ usuario.get_rol_display }}</span></p>
+    <p><strong>DNI:</strong> {{ usuario.dni|default:'—' }}</p>
+    <p><strong>Teléfono:</strong> {{ usuario.telefono|default:'—' }}</p>
+</div>
+{% endblock %}

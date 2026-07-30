@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesión · {{ nombre_empresa }}</title>
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+    <link rel="stylesheet" href="{% static 'css/componentes.css' %}">
+</head>
+<body>
+    <div class="pagina-login">
+        <div class="tarjeta-login">
+            <div class="tarjeta-login__marca">
+                <h1>{{ nombre_empresa }}</h1>
+                <span>Control de Inventario y Ventas</span>
+            </div>
+
+            {% include 'layouts/mensajes.html' %}
+
+            <form method="post" class="formulario">
+                {% csrf_token %}
+                <div class="grupo-formulario">
+                    <label for="{{ form.username.id_for_label }}">Usuario</label>
+                    {{ form.username }}
+                </div>
+                <div class="grupo-formulario">
+                    <label for="{{ form.password.id_for_label }}">Contraseña</label>
+                    {{ form.password }}
+                </div>
+                <button type="submit" class="boton boton--primario" style="width: 100%;">Ingresar</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

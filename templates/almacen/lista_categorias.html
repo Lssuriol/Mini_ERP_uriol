@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block titulo %}Categorías{% endblock %}
+{% block titulo_pagina %}Categorías de productos{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <div class="barra-herramientas-tabla">
+        <div></div>
+        <a href="{% url 'almacen:crear_categoria' %}" class="boton boton--acento">+ Nueva categoría</a>
+    </div>
+
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th class="celda-numerica">Productos</th>
+                    <th>Estado</th>
+                    <th class="celda-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for categoria in categorias %}
+                <tr>
+                    <td>{{ categoria.nombre }}</td>
+                    <td>{{ categoria.descripcion|default:'—' }}</td>
+                    <td class="celda-numerica">{{ categoria.productos.count }}</td>
+                    <td>
+                        {% if categoria.activa %}
+                            <span class="etiqueta etiqueta--exito">Activa</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta--neutro">Inactiva</span>
+                        {% endif %}
+                    </td>
+                    <td class="celda-acciones">
+                        <a href="{% url 'almacen:editar_categoria' categoria.id %}" class="boton boton--secundario boton--pequeno">Editar</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="tabla-vacia">Aún no hay categorías registradas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

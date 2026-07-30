@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block titulo %}Ventas{% endblock %}
+{% block titulo_pagina %}Historial de ventas{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <div class="barra-herramientas-tabla" style="margin-bottom: var(--espacio-md); display: flex; flex-wrap: wrap; gap: var(--espacio-sm); justify-content: space-between; align-items: center;">
+        <form method="GET" action="" style="display: flex; gap: var(--espacio-sm); flex-wrap: wrap; align-items: center;">
+            <input type="text" name="q" value="{{ q }}" placeholder="Buscar comprobante, DNI o cliente..." class="campo-formulario" style="width: 250px;">
+            <select name="estado" class="campo-formulario">
+                <option value="">-- Todos los estados --</option>
+                <option value="COMPLETADA" {% if estado_filtro == 'COMPLETADA' %}selected{% endif %}>Completada</option>
+                <option value="ANULADA" {% if estado_filtro == 'ANULADA' %}selected{% endif %}>Anulada</option>
+            </select>
+            <div style="display: flex; gap: 5px; align-items: center;">
+                <label style="font-size: 0.9em; color: var(--gris-600);">Desde:</label>
+                <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}" class="campo-formulario">
+            </div>
+            <div style="display: flex; gap: 5px; align-items: center;">
+                <label style="font-size: 0.9em; color: var(--gris-600);">Hasta:</label>
+                <input type="date" name="fecha_fin" value="{{ fecha_fin }}" class="campo-formulario">
+            </div>
+            <button type="submit" class="boton boton--secundario">Filtrar</button>
+            <a href="{% url 'caja:lista_ventas' %}" class="boton" style="color: var(--gris-600); padding: 8px;">Limpiar</a>
+        </form>
+        <a href="{% url 'caja:punto_venta' %}" class="boton boton--acento">+ Nueva venta</a>
+    </div>
+
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Comprobante</th>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Cajero</th>
+                    <th class="celda-numerica">Total</th>
+                    <th>Estado</th>
+                    <th class="celda-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in page_obj %}
+                <tr>
+                    <td>{{ venta.numero_comprobante }}</td>
+                    <td>{{ venta.fecha_creacion|date:'d/m/Y H:i' }}</td>
+                    <td>{{ venta.cliente_nombre }}</td>
+                    <td>{{ venta.cajero.get_full_name|default:venta.cajero.username }}</td>
+                    <td class="celda-numerica">S/ {{ venta.total }}</td>
+                    <td>
+                        {% if venta.estado == 'COMPLETADA' %}
+                            <span class="etiqueta etiqueta--exito">Completada</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta--error">Anulada</span>
+                        {% endif %}
+                    </td>
+                    <td class="celda-acciones">
+                        <a href="{% url 'caja:detalle_venta' venta.id %}" class="boton boton--secundario boton--pequeno">Ver</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="tabla-vacia">Aún no se registran ventas o ninguna coincide con la búsqueda.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div style="margin-top: var(--espacio-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--espacio-sm);">
+        <span style="color: var(--gris-600); font-size: 0.9em;">
+            Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} ventas
+        </span>
+        <div style="display: flex; gap: 5px;">
+            {% if page_obj.has_previous %}
+                <a href="?page=1{% if q %}&q={{ q }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_inicio %}&fecha_inicio={{ fecha_inicio }}{% endif %}{% if fecha_fin %}&fecha_fin={{ fecha_fin }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">&laquo; Primero</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_inicio %}&fecha_inicio={{ fecha_inicio }}{% endif %}{% if fecha_fin %}&fecha_fin={{ fecha_fin }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">Anterior</a>
+            {% endif %}
+
+            <span class="boton" style="background-color: var(--color-primario); color: white; padding: 5px 15px; cursor: default;">
+                {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_inicio %}&fecha_inicio={{ fecha_inicio }}{% endif %}{% if fecha_fin %}&fecha_fin={{ fecha_fin }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">Siguiente</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if estado_filtro %}&estado={{ estado_filtro }}{% endif %}{% if fecha_inicio %}&fecha_inicio={{ fecha_inicio }}{% endif %}{% if fecha_fin %}&fecha_fin={{ fecha_fin }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">Último &raquo;</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block titulo %}Anular venta{% endblock %}
+{% block titulo_pagina %}Anular venta {{ venta.numero_comprobante }}{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <div class="alerta alerta--warning">
+        Esta acción repondrá automáticamente el stock de todos los productos de la venta
+        <strong>{{ venta.numero_comprobante }}</strong> (Total: S/ {{ venta.total }}).
+    </div>
+
+    <form method="post" class="formulario">
+        {% csrf_token %}
+        <div class="grupo-formulario">
+            <label for="{{ formulario.motivo_anulacion.id_for_label }}">Motivo de la anulación</label>
+            {{ formulario.motivo_anulacion }}
+        </div>
+        <div class="acciones-formulario">
+            <button type="submit" class="boton boton--peligro">Confirmar anulación</button>
+            <a href="{% url 'caja:detalle_venta' venta.id %}" class="boton boton--secundario">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

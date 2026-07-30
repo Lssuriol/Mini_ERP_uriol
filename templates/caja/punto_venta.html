@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block titulo %}Punto de venta{% endblock %}
+{% block titulo_pagina %}Punto de venta{% endblock %}
+
+{% block contenido %}
+<input type="hidden" id="pos-tasa-igv" value="0.18">
+<div id="pos-mensaje-estado"></div>
+
+<div class="pos-contenedor">
+    <div class="tarjeta">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3 class="tarjeta__titulo" style="margin-bottom: 0;">Buscar productos</h3>
+            <button type="button" id="pos-btn-escanear-camara" class="boton boton--secundario boton--pequeno">
+                Escanear
+            </button>
+        </div>
+        <div class="pos-buscador" style="position: relative;">
+            <input type="text" id="pos-campo-busqueda" class="campo-formulario" placeholder="Buscar por nombre o código...">
+            <div id="pos-resultados" class="pos-resultados" style="display:none; position:absolute; top: 100%; z-index:10; width:100%; background:#fff; border: 1px solid #ccc; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+        </div>
+        
+        <!-- Modal for camera scanner -->
+        <div id="pos-modal-escaner" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; text-align: center;">
+                <h3 style="margin-top: 0; margin-bottom: 15px;">Escanear productos</h3>
+                <p style="margin-bottom: 15px; color: #666; font-size: 0.9em;">Apunta el código de barras. Puedes escanear varios productos consecutivamente.</p>
+                <video id="pos-lector-camara" style="width: 100%; max-height: 300px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; background: #000;"></video>
+                <button type="button" id="pos-btn-cerrar-escaner" class="boton boton--secundario">Terminar de escanear</button>
+            </div>
+        </div>
+
+        <!-- Modal de Confirmación POS -->
+        <div id="pos-modal-tarjeta" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+            <div style="background: white; padding: 24px; border-radius: 8px; width: 90%; max-width: 450px;">
+                <h3 style="margin-top: 0; margin-bottom: 10px; color: var(--color-primario);">Confirmación de Pago con Tarjeta</h3>
+                <p style="margin-bottom: 20px; color: #555; font-size: 0.95em;">
+                    Monto a cobrar en el terminal POS: <strong style="font-size: 1.2em; color: var(--color-texto);" id="pos-monto-cobrar">S/ 0.00</strong>
+                </p>
+                
+                <div class="grupo-formulario">
+                    <label>Operador POS</label>
+                    <select id="pos-input-operador" class="campo-formulario">
+                        <option value="">-- Seleccionar --</option>
+                        <option value="Izipay">Izipay</option>
+                        <option value="Niubiz">Niubiz</option>
+                        <option value="Culqi">Culqi</option>
+                        <option value="Vendemas">VendeMás</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+                
+                <div class="grupo-formulario">
+                    <label>Tipo de Tarjeta</label>
+                    <select id="pos-input-tipo-tarjeta" class="campo-formulario">
+                        <option value="">-- Seleccionar --</option>
+                        <option value="Débito">Débito</option>
+                        <option value="Crédito">Crédito</option>
+                    </select>
+                </div>
+                
+                <div class="grupo-formulario" style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <label>N° Autorización</label>
+                        <input type="text" id="pos-input-autorizacion" class="campo-formulario" placeholder="Ej. 123456">
+                    </div>
+                    <div style="flex: 1;">
+                        <label>Últimos 4 dígitos</label>
+                        <input type="text" id="pos-input-ultimos-digitos" class="campo-formulario" placeholder="Ej. 4567" maxlength="4" pattern="\d{4}">
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
+                    <button type="button" id="pos-btn-cancelar-tarjeta" class="boton boton--secundario">Cancelar</button>
+                    <button type="button" id="pos-btn-confirmar-tarjeta" class="boton boton--acento">Confirmar Pago en POS</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabla-envoltorio">
+            <table class="tabla-datos">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th class="celda-numerica">Precio</th>
+                        <th>Cantidad</th>
+                        <th class="celda-numerica">Subtotal</th>
+                        <th class="celda-acciones">&nbsp;</th>
+                    </tr>
+                </thead>
+                <tbody id="pos-carrito-cuerpo">
+                    <tr><td colspan="5" class="pos-carrito-vacio">Aún no has agregado productos.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Datos del comprobante</h3>
+        <div class="grupo-formulario">
+            <label for="id_tipo_comprobante">Tipo de comprobante</label>
+            {{ formulario.tipo_comprobante }}
+        </div>
+        <div class="grupo-formulario">
+            <label for="id_metodo_pago">Método de pago</label>
+            {{ formulario.metodo_pago }}
+        </div>
+        <div class="grupo-formulario">
+            <label for="id_cliente_nombre">Cliente</label>
+            {{ formulario.cliente_nombre }}
+        </div>
+        <div class="grupo-formulario">
+            <label for="id_cliente_documento">DNI / RUC del cliente</label>
+            <div style="display: flex; gap: 8px;">
+                {{ formulario.cliente_documento }}
+                <button type="button" id="pos-btn-buscar-ruc" class="boton boton--secundario" style="padding: 0 1rem;" title="Buscar RUC en SUNAT"><i class="fi fi-rs-search"></i></button>
+            </div>
+        </div>
+        <div class="grupo-formulario">
+            <label for="id_cliente_email">Correo (Opcional)</label>
+            {{ formulario.cliente_email }}
+        </div>
+
+        <div class="pos-resumen">
+            <div class="pos-resumen__linea"><span>Subtotal</span><span id="pos-resumen-subtotal">S/ 0.00</span></div>
+            <div class="pos-resumen__linea"><span>IGV (18%)</span><span id="pos-resumen-igv">S/ 0.00</span></div>
+            <div class="pos-resumen__linea pos-resumen__linea--total"><span>Total</span><span id="pos-resumen-total">S/ 0.00</span></div>
+        </div>
+
+        <button type="button" id="pos-boton-registrar-venta" class="boton boton--acento" style="width: 100%; margin-top: var(--espacio-md);" disabled>
+            Registrar venta
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="https://unpkg.com/@zxing/library@latest/umd/index.min.js" type="text/javascript"></script>
+<script src="{% static 'js/scanner.js' %}"></script>
+<script src="{% static 'js/ventas.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Mini ERP{% endblock %} · {{ nombre_empresa }}</title>
+    <link rel="stylesheet" href="{% static 'css/variables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tablas.css' %}">
+    <link rel="stylesheet" href="{% static 'css/formularios.css' %}">
+    <link rel="stylesheet" href="{% static 'css/componentes.css' %}">
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.5.0/uicons-regular-straight/css/uicons-regular-straight.css">
+    {% block estilos_extra %}{% endblock %}
+</head>
+<body>
+    <div class="contenedor-app">
+        {% include 'layouts/barra_lateral.html' %}
+
+        <div class="contenido-principal">
+            <header class="encabezado">
+                <h2 class="encabezado__titulo">{% block titulo_pagina %}Panel principal{% endblock %}</h2>
+                <div class="encabezado__usuario">
+                    {% if user.is_authenticated %}
+                        <span class="rol-etiqueta">{{ user.get_rol_display }}</span>
+                        <span>{{ user.get_full_name|default:user.username }}</span>
+                        <a href="{% url 'usuarios:cerrar_sesion' %}" class="boton boton--secundario boton--pequeno">Salir</a>
+                    {% endif %}
+                </div>
+            </header>
+
+            <main class="zona-contenido">
+                {% include 'layouts/mensajes.html' %}
+                {% block contenido %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block scripts_extra %}{% endblock %}
+</body>
+</html>

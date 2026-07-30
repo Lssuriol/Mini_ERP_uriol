@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block titulo_pagina %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <form method="post" class="formulario">
+        {% csrf_token %}
+        <div class="grupo-formulario">
+            <label for="{{ formulario.nombre.id_for_label }}">Nombre</label>
+            {{ formulario.nombre }}
+            {% if formulario.nombre.errors %}<div class="texto-error">{{ formulario.nombre.errors.0 }}</div>{% endif %}
+        </div>
+        <div class="grupo-formulario">
+            <label for="{{ formulario.descripcion.id_for_label }}">Descripción</label>
+            {{ formulario.descripcion }}
+        </div>
+        <div class="grupo-formulario">
+            <label>{{ formulario.activa }} Categoría activa</label>
+        </div>
+        <div class="acciones-formulario">
+            <button type="submit" class="boton boton--primario">Guardar</button>
+            <a href="{% url 'almacen:lista_categorias' %}" class="boton boton--secundario">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

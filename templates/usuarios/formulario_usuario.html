@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }}{% endblock %}
+{% block titulo_pagina %}{{ titulo }}{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <form method="post" class="formulario">
+        {% csrf_token %}
+
+        {% if formulario.non_field_errors %}
+        <div class="alerta alerta--error" style="margin-bottom: var(--espacio-md);">
+            {% for error in formulario.non_field_errors %}
+                {{ error }}<br>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if not usuario_editado %}
+        <div class="grupo-formulario">
+            <label for="{{ formulario.username.id_for_label }}">Usuario</label>
+            {{ formulario.username }}
+            {% if formulario.username.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.username.errors.0 }}</div>{% endif %}
+        </div>
+        {% endif %}
+
+        <div class="fila-formulario">
+            <div class="grupo-formulario">
+                <label for="{{ formulario.first_name.id_for_label }}">Nombres</label>
+                {{ formulario.first_name }}
+                {% if formulario.first_name.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.first_name.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="grupo-formulario">
+                <label for="{{ formulario.last_name.id_for_label }}">Apellidos</label>
+                {{ formulario.last_name }}
+                {% if formulario.last_name.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.last_name.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <div class="grupo-formulario">
+                <label for="{{ formulario.email.id_for_label }}">Correo electrónico</label>
+                {{ formulario.email }}
+                {% if formulario.email.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.email.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="grupo-formulario">
+                <label for="{{ formulario.dni.id_for_label }}">DNI</label>
+                {{ formulario.dni }}
+                {% if formulario.dni.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.dni.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <div class="grupo-formulario">
+                <label for="{{ formulario.telefono.id_for_label }}">Teléfono</label>
+                {{ formulario.telefono }}
+                {% if formulario.telefono.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.telefono.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="grupo-formulario">
+                <label for="{{ formulario.rol.id_for_label }}">Rol de acceso</label>
+                {{ formulario.rol }}
+                {% if formulario.rol.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.rol.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+
+        {% if formulario.password1 %}
+        <div class="fila-formulario">
+            <div class="grupo-formulario">
+                <label for="{{ formulario.password1.id_for_label }}">Contraseña</label>
+                {{ formulario.password1 }}
+                {% if formulario.password1.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.password1.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="grupo-formulario">
+                <label for="{{ formulario.password2.id_for_label }}">Confirmar contraseña</label>
+                {{ formulario.password2 }}
+                {% if formulario.password2.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.password2.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="grupo-formulario">
+            <label>{{ formulario.activo_en_sistema }} Usuario habilitado en el sistema</label>
+        </div>
+
+        <div class="acciones-formulario">
+            <button type="submit" class="boton boton--primario">Guardar</button>
+            <a href="{% url 'usuarios:lista_usuarios' %}" class="boton boton--secundario">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

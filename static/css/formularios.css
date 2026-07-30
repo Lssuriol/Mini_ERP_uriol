@@ -1,0 +1,134 @@
+/* Formularios: campos, etiquetas, ayudas y validaciones */
+
+.formulario {
+    max-width: 640px;
+}
+
+.formulario--ancho-completo {
+    max-width: none;
+}
+
+.grupo-formulario {
+    margin-bottom: var(--espacio-md);
+}
+
+.grupo-formulario label {
+    display: block;
+    font-size: var(--tamano-fuente-pequena);
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 6px;
+}
+
+.campo-formulario {
+    width: 100%;
+    padding: 9px 10px;
+    font-size: var(--tamano-fuente-base);
+    font-family: var(--fuente-base);
+    color: var(--color-texto);
+    background-color: #ffffff;
+    border: 1px solid var(--color-borde-oscuro);
+    border-radius: var(--radio-borde);
+}
+
+.campo-formulario:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 2px rgba(16, 36, 62, 0.15);
+}
+
+textarea.campo-formulario {
+    resize: vertical;
+    min-height: 70px;
+}
+
+.texto-ayuda {
+    font-size: var(--tamano-fuente-pequena);
+    color: var(--color-texto-secundario);
+    margin-top: 4px;
+}
+
+.texto-error {
+    font-size: var(--tamano-fuente-pequena);
+    color: var(--color-error);
+    margin-top: 4px;
+    font-weight: 600;
+}
+
+.fila-formulario {
+    display: flex;
+    gap: var(--espacio-md);
+}
+
+.fila-formulario > .grupo-formulario {
+    flex: 1;
+}
+
+.acciones-formulario {
+    display: flex;
+    gap: var(--espacio-sm);
+    margin-top: var(--espacio-lg);
+}
+
+/* Botones */
+.boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 18px;
+    font-size: var(--tamano-fuente-base);
+    font-weight: 600;
+    font-family: var(--fuente-base);
+    border: 1px solid transparent;
+    border-radius: var(--radio-borde);
+    cursor: pointer;
+    text-decoration: none;
+    line-height: 1.2;
+}
+
+.boton:hover {
+    text-decoration: none;
+    opacity: 0.92;
+}
+
+.boton:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.boton--primario {
+    background-color: var(--color-primario);
+    color: #ffffff;
+}
+
+.boton--acento {
+    background-color: var(--color-acento);
+    color: #ffffff;
+}
+
+.boton--peligro {
+    background-color: var(--color-error);
+    color: #ffffff;
+}
+
+.boton--secundario {
+    background-color: transparent;
+    color: var(--color-primario);
+    border-color: var(--color-borde-oscuro);
+}
+
+.boton--secundario:hover {
+    background-color: var(--color-fondo);
+}
+
+.boton--pequeno {
+    padding: 5px 11px;
+    font-size: var(--tamano-fuente-pequena);
+}
+
+.mensajes-formulario {
+    margin-bottom: var(--espacio-md);
+}

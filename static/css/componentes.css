@@ -1,0 +1,200 @@
+/* Componentes específicos: KPIs, alertas, mensajes, punto de venta, login */
+
+/* --- Tarjetas KPI del dashboard --- */
+.tarjeta-kpi {
+    background-color: var(--color-fondo-tarjeta);
+    border: 1px solid var(--color-borde);
+    border-left: 4px solid var(--color-primario);
+    box-shadow: var(--sombra-tarjeta);
+    padding: var(--espacio-md) var(--espacio-lg);
+}
+
+.tarjeta-kpi--acento { border-left-color: var(--color-acento); }
+.tarjeta-kpi--exito { border-left-color: var(--color-exito); }
+.tarjeta-kpi--advertencia { border-left-color: var(--color-advertencia); }
+
+.tarjeta-kpi__etiqueta {
+    font-size: var(--tamano-fuente-pequena);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--color-texto-secundario);
+    margin: 0 0 6px;
+}
+
+.tarjeta-kpi__valor {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+    color: var(--color-primario);
+}
+
+/* --- Mensajes / alertas del sistema --- */
+.alerta {
+    padding: 11px var(--espacio-md);
+    border: 1px solid transparent;
+    margin-bottom: var(--espacio-sm);
+    font-size: var(--tamano-fuente-base);
+}
+
+.alerta--success { background-color: var(--color-exito-fondo); color: var(--color-exito); border-color: var(--color-exito); }
+.alerta--error { background-color: var(--color-error-fondo); color: var(--color-error); border-color: var(--color-error); }
+.alerta--warning { background-color: var(--color-advertencia-fondo); color: var(--color-advertencia); border-color: var(--color-advertencia); }
+.alerta--info { background-color: var(--color-info-fondo); color: var(--color-info); border-color: var(--color-info); }
+
+/* --- Página de inicio de sesión --- */
+.tarjeta-login {
+    width: 380px;
+    background-color: #ffffff;
+    padding: var(--espacio-xl);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+}
+
+.tarjeta-login__marca {
+    text-align: center;
+    margin-bottom: var(--espacio-lg);
+}
+
+.tarjeta-login__marca h1 {
+    font-size: 20px;
+    color: var(--color-primario);
+    margin: 0 0 4px;
+}
+
+.tarjeta-login__marca span {
+    font-size: var(--tamano-fuente-pequena);
+    color: var(--color-texto-secundario);
+}
+
+/* --- Punto de venta (POS) --- */
+.pos-contenedor {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--espacio-lg);
+    align-items: start;
+}
+
+@media (max-width: 1100px) {
+    .pos-contenedor {
+        grid-template-columns: 1fr;
+    }
+}
+
+.pos-buscador {
+    position: relative;
+    margin-bottom: var(--espacio-md);
+}
+
+.pos-resultados {
+    border: 1px solid var(--color-borde);
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.pos-resultados__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px var(--espacio-md);
+    border-bottom: 1px solid var(--color-borde);
+    cursor: pointer;
+}
+
+.pos-resultados__item:hover {
+    background-color: var(--color-fondo);
+}
+
+.pos-resultados__item:last-child {
+    border-bottom: none;
+}
+
+.pos-resultados__nombre {
+    font-weight: 600;
+}
+
+.pos-resultados__meta {
+    font-size: var(--tamano-fuente-pequena);
+    color: var(--color-texto-secundario);
+}
+
+.pos-carrito__fila td {
+    vertical-align: middle;
+}
+
+.pos-carrito__cantidad {
+    width: 70px;
+    text-align: center;
+    padding: 6px;
+    border: 1px solid var(--color-borde-oscuro);
+}
+
+.pos-resumen {
+    border-top: 2px solid var(--color-primario);
+    padding-top: var(--espacio-md);
+    margin-top: var(--espacio-md);
+}
+
+.pos-resumen__linea {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: var(--tamano-fuente-base);
+}
+
+.pos-resumen__linea--total {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primario);
+    border-top: 1px solid var(--color-borde);
+    margin-top: 6px;
+    padding-top: 10px;
+}
+
+.pos-carrito-vacio {
+    text-align: center;
+    color: var(--color-texto-secundario);
+    padding: var(--espacio-lg) 0;
+}
+
+/* --- Miniatura de producto en tablas --- */
+.miniatura-producto {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border: 1px solid var(--color-borde);
+    background-color: var(--color-fondo);
+}
+
+/* --- Comprobante de venta (impresión) --- */
+.comprobante {
+    max-width: 420px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid var(--color-borde);
+    padding: var(--espacio-lg);
+}
+
+.comprobante__encabezado {
+    text-align: center;
+    border-bottom: 2px dashed var(--color-borde-oscuro);
+    padding-bottom: var(--espacio-md);
+    margin-bottom: var(--espacio-md);
+}
+
+.comprobante__tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--tamano-fuente-pequena);
+}
+
+.comprobante__tabla td, .comprobante__tabla th {
+    padding: 4px 0;
+}
+
+@media print {
+    .barra-lateral, .encabezado, .no-imprimir {
+        display: none !important;
+    }
+    .zona-contenido {
+        padding: 0;
+    }
+}

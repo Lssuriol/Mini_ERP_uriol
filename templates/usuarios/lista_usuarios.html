@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block titulo %}Usuarios{% endblock %}
+{% block titulo_pagina %}Usuarios del sistema{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <div class="barra-herramientas-tabla">
+        <div></div>
+        <a href="{% url 'usuarios:crear_usuario' %}" class="boton boton--acento">+ Nuevo usuario</a>
+    </div>
+
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre completo</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th class="celda-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario_item in usuarios %}
+                <tr>
+                    <td>{{ usuario_item.username }}</td>
+                    <td>{{ usuario_item.get_full_name|default:'—' }}</td>
+                    <td><span class="etiqueta etiqueta--info">{{ usuario_item.get_rol_display }}</span></td>
+                    <td>
+                        {% if usuario_item.activo_en_sistema %}
+                            <span class="etiqueta etiqueta--exito">Habilitado</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta--error">Deshabilitado</span>
+                        {% endif %}
+                    </td>
+                    <td class="celda-acciones">
+                        <a href="{% url 'usuarios:editar_usuario' usuario_item.id %}" class="boton boton--secundario boton--pequeno">Editar</a>
+                        <form method="post" action="{% url 'usuarios:alternar_estado_usuario' usuario_item.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="boton boton--secundario boton--pequeno">
+                                {% if usuario_item.activo_en_sistema %}Deshabilitar{% else %}Habilitar{% endif %}
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="tabla-vacia">No hay usuarios registrados.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

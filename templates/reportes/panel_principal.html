@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block titulo %}Panel principal{% endblock %}
+{% block titulo_pagina %}Panel principal{% endblock %}
+
+{% block contenido %}
+<div class="cuadricula cuadricula--4">
+    <div class="tarjeta-kpi tarjeta-kpi--acento" title="Suma de todas las ventas completadas en el día de hoy">
+        <p class="tarjeta-kpi__etiqueta">Vendido hoy</p>
+        <p class="tarjeta-kpi__valor">S/ {{ total_vendido_hoy }}</p>
+    </div>
+    <div class="tarjeta-kpi" title="Cantidad total de comprobantes (boletas, facturas, etc.) emitidos hoy">
+        <p class="tarjeta-kpi__etiqueta">Ventas hoy</p>
+        <p class="tarjeta-kpi__valor">{{ cantidad_ventas_hoy }}</p>
+    </div>
+    <div class="tarjeta-kpi tarjeta-kpi--exito" title="Promedio de dinero gastado por cada venta hoy (Vendido hoy ÷ Ventas hoy)">
+        <p class="tarjeta-kpi__etiqueta">Ticket promedio</p>
+        <p class="tarjeta-kpi__valor">S/ {{ ticket_promedio }}</p>
+    </div>
+    <div class="tarjeta-kpi tarjeta-kpi--advertencia" title="Productos cuyo stock actual es igual o menor a su stock mínimo de seguridad">
+        <p class="tarjeta-kpi__etiqueta">Alertas de stock bajo</p>
+        <p class="tarjeta-kpi__valor">{{ productos_stock_bajo|length }}</p>
+    </div>
+</div>
+
+<!-- Gráfico de ventas últimos 7 días -->
+<div class="tarjeta" style="margin-bottom: var(--espacio-lg);">
+    <h3 class="tarjeta__titulo">Ventas de los últimos 7 días</h3>
+    <div style="position: relative; height: 280px;">
+        <canvas id="grafico-7-dias"></canvas>
+    </div>
+</div>
+
+<div class="cuadricula cuadricula--2">
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Productos con stock bajo</h3>
+        <div class="tabla-envoltorio">
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Producto</th><th class="celda-numerica">Stock</th><th class="celda-numerica">Mínimo</th></tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos_stock_bajo %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td class="celda-numerica">{{ producto.stock_actual }}</td>
+                        <td class="celda-numerica">{{ producto.stock_minimo }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="3" class="tabla-vacia">Sin alertas de stock por el momento.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="tarjeta">
+        <h3 class="tarjeta__titulo">Productos más vendidos</h3>
+        <div class="tabla-envoltorio">
+            <table class="tabla-datos">
+                <thead>
+                    <tr><th>Producto</th><th class="celda-numerica">Unidades vendidas</th></tr>
+                </thead>
+                <tbody>
+                    {% for producto in productos_mas_vendidos %}
+                    <tr>
+                        <td>{{ producto.producto__nombre }}</td>
+                        <td class="celda-numerica">{{ producto.unidades_vendidas }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="2" class="tabla-vacia">Aún no hay ventas registradas.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="tarjeta">
+    <h3 class="tarjeta__titulo">Últimas ventas</h3>
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr><th>Comprobante</th><th>Cajero</th><th class="celda-numerica">Total</th><th>Fecha</th></tr>
+            </thead>
+            <tbody>
+                {% for venta in ultimas_ventas %}
+                <tr>
+                    <td><a href="{% url 'caja:detalle_venta' venta.id %}">{{ venta.numero_comprobante }}</a></td>
+                    <td>{{ venta.cajero.get_full_name|default:venta.cajero.username }}</td>
+                    <td class="celda-numerica">S/ {{ venta.total }}</td>
+                    <td>{{ venta.fecha_creacion|date:'d/m/Y H:i' }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="tabla-vacia">Aún no hay ventas registradas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var etiquetas = {{ grafico_7d_etiquetas|safe }};
+    var datos = {{ grafico_7d_datos|safe }};
+
+    new Chart(document.getElementById('grafico-7-dias'), {
+        type: 'bar',
+        data: {
+            labels: etiquetas,
+            datasets: [{
+                label: 'Ventas (S/)',
+                data: datos,
+                backgroundColor: 'rgba(16, 36, 62, 0.75)',
+                borderColor: '#10243e',
+                borderWidth: 1,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(ctx) { return 'S/ ' + ctx.parsed.y.toFixed(2); }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(v) { return 'S/ ' + v; }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block titulo %}Bajo Movimiento{% endblock %}
+{% block titulo_pagina %}Productos con Bajo Movimiento{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta" style="margin-bottom: var(--espacio-lg);">
+    <form method="get" style="display: flex; gap: var(--espacio-md); align-items: flex-end; flex-wrap: wrap;">
+        <div class="campo">
+            <label class="campo__etiqueta">Desde</label>
+            <input type="date" name="fecha_inicio" class="campo__entrada" value="{{ fecha_inicio }}" required>
+        </div>
+        <div class="campo">
+            <label class="campo__etiqueta">Hasta</label>
+            <input type="date" name="fecha_fin" class="campo__entrada" value="{{ fecha_fin }}" required>
+        </div>
+        <div class="campo" style="width: 150px;">
+            <label class="campo__etiqueta" title="Se mostrarán productos con ventas iguales o menores a este número">Umbral de ventas</label>
+            <input type="number" name="umbral" class="campo__entrada" value="{{ umbral }}" min="0" required>
+        </div>
+        <div class="campo">
+            <button type="submit" class="boton boton--primario">Filtrar</button>
+        </div>
+    </form>
+</div>
+
+<div class="tarjeta">
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Categoría</th>
+                    <th class="celda-numerica">Stock Actual</th>
+                    <th class="celda-numerica">Unidades Vendidas</th>
+                    <th>Estado sugerido</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for producto in productos %}
+                <tr>
+                    <td>
+                        <strong>{{ producto.nombre }}</strong><br>
+                        <small class="texto-secundario">{{ producto.codigo }}</small>
+                    </td>
+                    <td>{{ producto.categoria.nombre|default:"Sin categoría" }}</td>
+                    <td class="celda-numerica">{{ producto.stock_actual }}</td>
+                    <td class="celda-numerica">
+                        {% if producto.unidades_vendidas == 0 %}
+                            <span style="color: var(--color-peligro); font-weight: bold;">0</span>
+                        {% else %}
+                            {{ producto.unidades_vendidas }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if producto.unidades_vendidas == 0 %}
+                            <span class="etiqueta etiqueta--peligro">Mercadería estancada</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta--advertencia">Baja rotación</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="tabla-vacia">No hay productos que cumplan estos criterios en el rango de fechas seleccionado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

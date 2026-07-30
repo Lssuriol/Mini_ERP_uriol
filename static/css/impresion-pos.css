@@ -1,0 +1,122 @@
+/*
+ * Estilos optimizados para impresión de comprobantes en impresoras térmicas (80mm)
+ * Se activan únicamente durante la impresión (@media print).
+ */
+
+@media print {
+    /* 1. Ocultar elementos de la interfaz (menús, botones, barra lateral) */
+    .barra-lateral,
+    .encabezado,
+    .no-imprimir,
+    .zona-contenido > *:not(#ticket-impresion) {
+        display: none !important;
+    }
+
+    /* 2. Resetear márgenes y fondos de la página */
+    body, html, .contenedor-app, .contenido-principal, .zona-contenido {
+        background-color: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: auto !important;
+        min-height: 0 !important;
+    }
+
+    /* 3. Configuración de la página para rollo térmico de 80mm */
+    @page {
+        size: 80mm auto;
+        margin: 0; /* Sin márgenes del navegador para maximizar el ancho */
+    }
+
+    /* 4. Estilos específicos del ticket (comprobante) */
+    #ticket-impresion {
+        display: block !important;
+        width: 100% !important;
+        max-width: 80mm !important; /* Limitar el ancho máximo al papel */
+        padding: 5mm !important; /* Margen interno seguro */
+        margin: 0 auto !important;
+        
+        /* Tipografía legible para impresión térmica */
+        font-family: 'Courier New', Courier, monospace !important; 
+        font-size: 12px !important;
+        line-height: 1.2 !important;
+        color: #000 !important;
+    }
+
+    #ticket-impresion * {
+        background: transparent !important;
+        color: #000 !important;
+        box-shadow: none !important;
+    }
+
+    /* Encabezado del ticket */
+    #ticket-impresion .ticket-encabezado {
+        text-align: center;
+        margin-bottom: 10px;
+    }
+    
+    #ticket-impresion .ticket-encabezado strong {
+        font-size: 16px;
+    }
+
+    /* Datos generales (cliente, fecha, cajero) */
+    #ticket-impresion .ticket-datos {
+        margin-bottom: 10px;
+        border-bottom: 1px dashed #000;
+        padding-bottom: 5px;
+    }
+
+    /* Tabla de productos */
+    #ticket-impresion table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10px;
+    }
+    
+    #ticket-impresion th {
+        border-bottom: 1px dashed #000;
+        text-align: left;
+        padding: 2px 0;
+        font-weight: bold;
+    }
+    
+    #ticket-impresion td {
+        padding: 2px 0;
+        vertical-align: top;
+    }
+
+    #ticket-impresion .td-num {
+        text-align: right;
+    }
+
+    #ticket-impresion .td-producto {
+        max-width: 40mm;
+        word-wrap: break-word;
+    }
+
+    /* Resumen (Totales) */
+    #ticket-impresion .ticket-resumen {
+        border-top: 1px dashed #000;
+        padding-top: 5px;
+        margin-bottom: 10px;
+    }
+
+    #ticket-impresion .ticket-resumen-linea {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+    }
+
+    #ticket-impresion .ticket-total {
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 5px;
+        border-top: 2px solid #000;
+        padding-top: 5px;
+    }
+
+    #ticket-impresion .ticket-pie {
+        text-align: center;
+        margin-top: 15px;
+        font-size: 11px;
+    }
+}

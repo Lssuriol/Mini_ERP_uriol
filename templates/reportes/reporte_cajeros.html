@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block titulo %}Desempeño de Cajeros{% endblock %}
+{% block titulo_pagina %}Reporte de Ventas por Cajero{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Cajero</th>
+                    <th class="celda-numerica">Total Ventas</th>
+                    <th class="celda-numerica">Monto Vendido</th>
+                    <th class="celda-numerica">Ticket Promedio</th>
+                    <th>Métodos de Pago (Desglose)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dato in datos_cajeros %}
+                <tr>
+                    <td>
+                        <strong>{{ dato.cajero.get_full_name|default:dato.cajero.username }}</strong><br>
+                        <small>{{ dato.cajero.get_rol_display }}</small>
+                    </td>
+                    <td class="celda-numerica" style="font-size: 1.1em; font-weight: 600;">{{ dato.total_ventas }}</td>
+                    <td class="celda-numerica" style="font-size: 1.1em; font-weight: 600; color: var(--color-exito);">
+                        S/ {{ dato.monto_vendido|floatformat:2 }}
+                    </td>
+                    <td class="celda-numerica">S/ {{ dato.ticket_promedio }}</td>
+                    <td>
+                        <div style="display: flex; gap: var(--espacio-sm); flex-direction: column;">
+                            {% for m in dato.metodos_pago %}
+                                <div style="display: flex; justify-content: space-between; font-size: 0.9em; background-color: var(--color-fondo); padding: 4px 8px; border-radius: var(--radio-sm);">
+                                    <span>{{ m.metodo_pago }}</span>
+                                    <span><b>{{ m.cantidad }}</b> (S/ {{ m.total|floatformat:2 }})</span>
+                                </div>
+                            {% empty %}
+                                <span class="texto-secundario">Sin ventas.</span>
+                            {% endfor %}
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="tabla-vacia">No hay cajeros registrados o activos.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Historial de ventas (Filtro global) -->
+<div class="tarjeta" style="margin-top: var(--espacio-lg);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--espacio-sm); margin-bottom: var(--espacio-md);">
+        <h3 class="tarjeta__titulo" style="margin-bottom: 0;">Últimas Ventas</h3>
+        <form method="get" style="display: flex; align-items: center; gap: var(--espacio-sm);">
+            <label for="cajero_id" style="font-weight: 500; font-size: 0.9em; color: var(--color-texto-secundario);">Filtrar por cajero:</label>
+            <select name="cajero_id" id="cajero_id" class="entrada" onchange="this.form.submit()" style="padding: 4px 8px; font-size: 0.9em;">
+                <option value="">Todos los cajeros</option>
+                {% for cajero in cajeros_lista %}
+                    <option value="{{ cajero.id }}" {% if cajero_seleccionado == cajero.id %}selected{% endif %}>
+                        {{ cajero.get_full_name|default:cajero.username }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Cajero</th>
+                    <th>Comprobante</th>
+                    <th>Cliente</th>
+                    <th>Método de Pago</th>
+                    <th class="celda-numerica">Total</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas_historial %}
+                <tr>
+                    <td>{{ venta.fecha_creacion|date:"d/m/Y H:i" }}</td>
+                    <td>{{ venta.cajero.get_full_name|default:venta.cajero.username }}</td>
+                    <td><b>{{ venta.numero_comprobante }}</b></td>
+                    <td>
+                        {{ venta.cliente_nombre|default:"Cliente varios" }}
+                        {% if venta.cliente_documento %}<br><small>{{ venta.cliente_documento }}</small>{% endif %}
+                    </td>
+                    <td>{{ venta.metodo_pago }}</td>
+                    <td class="celda-numerica">S/ {{ venta.total|floatformat:2 }}</td>
+                    <td>
+                        {% if venta.estado == 'COMPLETADA' %}
+                            <span class="etiqueta etiqueta--exito">Completada</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta--peligro">Anulada</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="tabla-vacia">Sin ventas registradas.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

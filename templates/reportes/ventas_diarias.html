@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block titulo %}Ventas por Rango{% endblock %}
+{% block titulo_pagina %}Reporte de Ventas por Rango de Fechas{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <form method="get" style="margin-bottom: var(--espacio-md); display:flex; gap: var(--espacio-sm); align-items:flex-end;">
+        <div class="grupo-formulario" style="margin-bottom:0;">
+            <label for="fecha_inicio">Desde</label>
+            <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ fecha_inicio }}" class="campo-formulario" required>
+        </div>
+        <div class="grupo-formulario" style="margin-bottom:0;">
+            <label for="fecha_fin">Hasta</label>
+            <input type="date" name="fecha_fin" id="fecha_fin" value="{{ fecha_fin }}" class="campo-formulario" required>
+        </div>
+        <button type="submit" class="boton boton--secundario">Consultar</button>
+    </form>
+
+    <div class="cuadricula cuadricula--2" style="margin-bottom: var(--espacio-lg);">
+        <div class="tarjeta-kpi tarjeta-kpi--acento">
+            <p class="tarjeta-kpi__etiqueta">Total vendido (Del {{ fecha_inicio }} al {{ fecha_fin }})</p>
+            <p class="tarjeta-kpi__valor">S/ {{ total_vendido|floatformat:2 }}</p>
+        </div>
+        <div class="tarjeta-kpi">
+            <p class="tarjeta-kpi__etiqueta">Número de ventas</p>
+            <p class="tarjeta-kpi__valor">{{ total_ventas }}</p>
+        </div>
+    </div>
+
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Comprobante</th>
+                    <th>Cajero</th>
+                    <th>Productos</th>
+                    <th class="celda-numerica">Total</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas_rango %}
+                <tr>
+                    <td>{{ venta.fecha_creacion|date:'d/m/Y H:i' }}</td>
+                    <td><a href="{% url 'caja:detalle_venta' venta.id %}">{{ venta.numero_comprobante }}</a></td>
+                    <td>{{ venta.cajero.get_full_name|default:venta.cajero.username }}</td>
+                    <td>
+                        {% for detalle in venta.detalles.all %}{{ detalle.producto.nombre }} (x{{ detalle.cantidad }}){% if not forloop.last %}, {% endif %}{% endfor %}
+                    </td>
+                    <td class="celda-numerica">S/ {{ venta.total }}</td>
+                    <td>
+                        {% if venta.estado == 'COMPLETADA' %}
+                            <span class="etiqueta etiqueta--exito">Completada</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta--error">Anulada</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="6" class="tabla-vacia">No hay ventas registradas en esta fecha.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

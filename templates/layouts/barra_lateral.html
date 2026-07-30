@@ -1,0 +1,54 @@
+{% load static %}
+<aside class="barra-lateral">
+    <div class="barra-lateral__marca">
+        <h1>{{ nombre_empresa }}</h1>
+        <span>Control de inventario y ventas</span>
+    </div>
+
+    {% if user.is_authenticated %}
+    <nav class="barra-lateral__nav">
+        <div class="barra-lateral__seccion-titulo">Reportes</div>
+        <a href="{% url 'reportes:panel_principal' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'panel_principal' %}barra-lateral__enlace--activo{% endif %}">Panel principal</a>
+        <a href="{% url 'reportes:estadisticas_ventas' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'estadisticas_ventas' %}barra-lateral__enlace--activo{% endif %}">Estadísticas globales</a>
+        <a href="{% url 'reportes:ventas_diarias' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'ventas_diarias' %}barra-lateral__enlace--activo{% endif %}">Ventas por fechas</a>
+        <a href="{% url 'reportes:reporte_comprobantes' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'reporte_comprobantes' %}barra-lateral__enlace--activo{% endif %}">Comprobantes</a>
+        {% if user.es_administrador or user.es_cajero %}
+        <a href="{% url 'reportes:reporte_cajeros' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'reporte_cajeros' %}barra-lateral__enlace--activo{% endif %}">Desempeño de cajeros</a>
+        {% endif %}
+        
+        {% if user.es_administrador or user.es_inventario %}
+        <a href="{% url 'reportes:reporte_bajo_movimiento' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'reporte_bajo_movimiento' %}barra-lateral__enlace--activo{% endif %}">Bajo movimiento</a>
+        {% endif %}
+
+        {% if user.es_administrador or user.es_cajero %}
+        <div class="barra-lateral__seccion-titulo">Caja</div>
+        <a href="{% url 'caja:punto_venta' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'punto_venta' %}barra-lateral__enlace--activo{% endif %}">Punto de venta</a>
+        <a href="{% url 'caja:lista_ventas' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'lista_ventas' or request.resolver_match.url_name == 'detalle_venta' %}barra-lateral__enlace--activo{% endif %}">Historial de ventas</a>
+        {% endif %}
+
+        {% if user.es_administrador or user.es_inventario %}
+        <div class="barra-lateral__seccion-titulo">Almacén</div>
+        <a href="{% url 'almacen:lista_productos' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'lista_productos' %}barra-lateral__enlace--activo{% endif %}">
+            Productos
+            {% if total_alertas_stock %}<span class="etiqueta etiqueta--advertencia" style="margin-left:auto;">{{ total_alertas_stock }}</span>{% endif %}
+        </a>
+        <a href="{% url 'almacen:lista_categorias' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'lista_categorias' %}barra-lateral__enlace--activo{% endif %}">Categorías</a>
+        <a href="{% url 'almacen:lista_movimientos' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'lista_movimientos' %}barra-lateral__enlace--activo{% endif %}">Movimientos de stock</a>
+        {% endif %}
+
+        {% if user.es_administrador %}
+        <div class="barra-lateral__seccion-titulo">Administración</div>
+        <a href="{% url 'usuarios:lista_usuarios' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'lista_usuarios' %}barra-lateral__enlace--activo{% endif %}">Usuarios del sistema</a>
+        <a href="/admin/" class="barra-lateral__enlace">Django Admin</a>
+        {% endif %}
+
+        <div class="barra-lateral__seccion-titulo">Mi cuenta</div>
+        <a href="{% url 'usuarios:mi_perfil' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'mi_perfil' %}barra-lateral__enlace--activo{% endif %}">Mi perfil</a>
+    </nav>
+    {% endif %}
+
+    <div class="barra-lateral__pie">
+        RUC {{ ruc_empresa }}<br>
+        &copy; {% now "Y" %} {{ nombre_empresa }}
+    </div>
+</aside>

@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block titulo %}Comprobante {{ venta.numero_comprobante }}{% endblock %}
+{% block titulo_pagina %}Detalle de venta{% endblock %}
+
+{% block estilos_extra %}
+<link rel="stylesheet" href="{% static 'css/impresion-pos.css' %}">
+{% endblock %}
+
+{% block contenido %}
+<div class="no-imprimir" style="margin-bottom: var(--espacio-md); display:flex; gap: var(--espacio-sm);">
+    <button onclick="window.print()" class="boton boton--secundario">Imprimir comprobante</button>
+    {% if venta.estado == 'COMPLETADA' %}
+        <a href="{% url 'caja:anular_venta' venta.id %}" class="boton boton--peligro">Anular venta</a>
+    {% endif %}
+    <a href="{% url 'caja:punto_venta' %}" class="boton boton--primario">Ir a punto de venta</a>
+    <a href="{% url 'caja:lista_ventas' %}" class="boton boton--secundario">Ir al historial</a>
+</div>
+
+{% if venta.comprobante_electronico %}
+<div class="tarjeta no-imprimir" style="margin-bottom: var(--espacio-md); padding: var(--espacio-md);">
+    <h4>Estado SUNAT: <span class="etiqueta">{{ venta.comprobante_electronico.get_estado_emision_display }}</span></h4>
+    
+    {% if venta.comprobante_electronico.estado_emision == 'ACEPTADA' %}
+        <div style="margin-top: var(--espacio-sm); display: flex; gap: var(--espacio-sm); flex-wrap: wrap; align-items: center;">
+            {% if venta.comprobante_electronico.enlace_pdf %}
+                <a href="{{ venta.comprobante_electronico.enlace_pdf }}" target="_blank" class="boton boton--secundario boton--pequeno">📄 Descargar PDF</a>
+            {% endif %}
+            {% if venta.comprobante_electronico.enlace_xml %}
+                <a href="{{ venta.comprobante_electronico.enlace_xml }}" target="_blank" class="boton boton--secundario boton--pequeno">⚙️ Descargar XML</a>
+            {% endif %}
+        </div>
+
+        {% if venta.cliente_email %}
+        <div style="margin-top: var(--espacio-sm); display: flex; gap: var(--espacio-sm); align-items: center; flex-wrap: wrap;">
+            <button type="button" onclick="enviarCorreo({{ venta.id }})" id="btn-enviar-correo" class="boton boton--primario boton--pequeno">
+                {% if venta.comprobante_electronico.correo_enviado %}
+                    🔄 Reenviar comprobante por correo
+                {% else %}
+                    📧 Enviar comprobante por correo
+                {% endif %}
+            </button>
+            <span style="color: var(--gris-600); font-size: 0.85rem;">
+                → {{ venta.cliente_email }}
+            </span>
+            {% if venta.comprobante_electronico.correo_enviado %}
+                <span id="estado-correo" style="color: #16a34a; font-size: 0.85rem; font-weight: 500;">
+                    ✅ Enviado el {{ venta.comprobante_electronico.fecha_envio_correo|date:'d/m/Y H:i' }}
+                </span>
+            {% else %}
+                <span id="estado-correo" style="font-size: 0.85rem;"></span>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    {% elif venta.comprobante_electronico.estado_emision == 'ERROR' or venta.comprobante_electronico.estado_emision == 'RECHAZADA' %}
+        <div class="alerta alerta--error" style="margin-top: var(--espacio-sm);">
+            {{ venta.comprobante_electronico.motivo_rechazo }}
+        </div>
+        <button type="button" onclick="reintentarEmision({{ venta.id }})" id="btn-reintentar" class="boton boton--acento boton--pequeno" style="margin-top: var(--espacio-sm);">
+            🔄 Reintentar envío a SUNAT
+        </button>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="comprobante" id="ticket-impresion">
+    <div class="ticket-encabezado">
+        <strong>{{ nombre_empresa }}</strong><br>
+        RUC: {{ ruc_empresa }}<br>
+        <span style="text-transform: uppercase;">{{ venta.get_tipo_comprobante_display }}</span> N° {{ venta.numero_comprobante }}<br>
+        {{ venta.fecha_creacion|date:'d/m/Y H:i' }}
+    </div>
+
+    <div class="ticket-datos">
+        <strong>Cliente:</strong> {{ venta.cliente_nombre|default:"Cliente Varios" }}<br>
+        {% if venta.cliente_documento %}<strong>Doc:</strong> {{ venta.cliente_documento }}<br>{% endif %}
+        <strong>Cajero:</strong> {{ venta.cajero.get_full_name|default:venta.cajero.username }}<br>
+        <strong>Pago:</strong> {{ venta.get_metodo_pago_display }}<br>
+        {% if venta.metodo_pago == 'TARJETA' %}
+            {% if venta.pos_operador %}<strong>POS:</strong> {{ venta.pos_operador }}<br>{% endif %}
+            {% if venta.pos_tipo_tarjeta %}<strong>Tipo Tarj:</strong> {{ venta.pos_tipo_tarjeta }}<br>{% endif %}
+            {% if venta.pos_numero_autorizacion %}<strong>Autoriz:</strong> {{ venta.pos_numero_autorizacion }}<br>{% endif %}
+            {% if venta.pos_ultimos_digitos %}<strong>Tarjeta:</strong> ****{{ venta.pos_ultimos_digitos }}<br>{% endif %}
+        {% endif %}
+        {% if venta.estado == 'ANULADA' %}
+            <strong style="color: red;">*** VENTA ANULADA ***</strong><br>
+            Motivo: {{ venta.motivo_anulacion }}
+        {% endif %}
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>CANT</th>
+                <th>DESCRIPCIÓN</th>
+                <th class="td-num">IMPORTE</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for detalle in venta.detalles.all %}
+            <tr>
+                <td>{{ detalle.cantidad }}</td>
+                <td class="td-producto">{{ detalle.producto.nombre }}</td>
+                <td class="td-num">S/ {{ detalle.subtotal_linea }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="ticket-resumen">
+        <div class="ticket-resumen-linea">
+            <span>Subtotal:</span>
+            <span>S/ {{ venta.subtotal }}</span>
+        </div>
+        <div class="ticket-resumen-linea">
+            <span>IGV (18%):</span>
+            <span>S/ {{ venta.igv }}</span>
+        </div>
+        <div class="ticket-resumen-linea ticket-total">
+            <span>TOTAL:</span>
+            <span>S/ {{ venta.total }}</span>
+        </div>
+    </div>
+    
+    <div class="ticket-pie">
+        ¡Gracias por su compra!<br>
+        Vuelva pronto
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('imprimir') === 'auto') {
+            // Dar un pequeñísimo retraso para asegurar que los estilos de impresión estén listos
+            setTimeout(function() {
+                window.print();
+            }, 300);
+        }
+    });
+
+    function reintentarEmision(ventaId) {
+        var btn = document.getElementById('btn-reintentar');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Procesando...';
+        }
+        
+        fetch('/facturacion/api/reintentar/' + ventaId + '/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.exito) {
+                location.reload();
+            } else {
+                alert('Error al reintentar: ' + data.mensaje);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Reintentar envío a SUNAT';
+                }
+            }
+        })
+        .catch(error => {
+            alert('Error de conexión');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = '🔄 Reintentar envío a SUNAT';
+            }
+        });
+    }
+
+    function enviarCorreo(ventaId) {
+        var btn = document.getElementById('btn-enviar-correo');
+        var estadoSpan = document.getElementById('estado-correo');
+        var textoOriginal = btn ? btn.textContent.trim() : '';
+
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = '📧 Enviando...';
+        }
+
+        fetch('/facturacion/api/enviar-correo/' + ventaId + '/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.exito) {
+                if (btn) {
+                    btn.textContent = '🔄 Reenviar comprobante por correo';
+                    btn.disabled = false;
+                }
+                if (estadoSpan) {
+                    estadoSpan.style.color = '#16a34a';
+                    estadoSpan.style.fontWeight = '500';
+                    estadoSpan.textContent = '✅ ' + data.mensaje;
+                }
+            } else {
+                alert('Error: ' + data.mensaje);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = textoOriginal;
+                }
+            }
+        })
+        .catch(error => {
+            alert('Error de conexión al enviar correo.');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = textoOriginal;
+            }
+        });
+    }
+</script>
+{% endblock %}

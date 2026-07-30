@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block titulo %}Registrar movimiento{% endblock %}
+{% block titulo_pagina %}Registrar movimiento de inventario{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta" style="overflow: visible;">
+    <form method="post" class="formulario">
+        {% csrf_token %}
+        <div class="grupo-formulario" style="position: relative;">
+            <label>Producto</label>
+            {{ formulario.producto }}
+            <input type="text" id="buscador-producto" class="campo-formulario" autocomplete="off" placeholder="Escribe para buscar un producto...">
+            {% if formulario.producto.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.producto.errors.0 }}</div>{% endif %}
+
+            <!-- Dropdown de resultados -->
+            <div id="resultados-busqueda" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid var(--color-borde); border-radius: 4px; z-index: 100; max-height: 250px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-top: 5px;">
+            </div>
+            
+            <!-- Producto seleccionado -->
+            <div id="producto-seleccionado-info" style="display: none; margin-top: 10px; padding: 10px; background: var(--color-fondo); border: 1px solid var(--color-borde); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span id="texto-producto-seleccionado" style="font-weight: 600;"></span>
+                <button type="button" id="btn-cambiar-producto" class="boton boton--secundario boton--pequeno">Cambiar</button>
+            </div>
+        </div>
+
+        <div class="fila-formulario">
+            <div class="grupo-formulario">
+                <label for="{{ formulario.tipo_movimiento.id_for_label }}">Tipo de movimiento</label>
+                {{ formulario.tipo_movimiento }}
+            </div>
+            <div class="grupo-formulario">
+                <label for="{{ formulario.cantidad.id_for_label }}">Cantidad</label>
+                {{ formulario.cantidad }}
+                {% if formulario.cantidad.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.cantidad.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
+        <div class="grupo-formulario">
+            <label for="{{ formulario.motivo.id_for_label }}">Motivo / observación</label>
+            {{ formulario.motivo }}
+        </div>
+        <div class="acciones-formulario">
+            <button type="submit" class="boton boton--primario">Registrar</button>
+            <a href="{% url 'almacen:lista_movimientos' %}" class="boton boton--secundario">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var inputBuscador = document.getElementById('buscador-producto');
+    var contenedorResultados = document.getElementById('resultados-busqueda');
+    var inputOcultoProducto = document.getElementById('id_producto_hidden');
+    var infoSeleccionado = document.getElementById('producto-seleccionado-info');
+    var textoSeleccionado = document.getElementById('texto-producto-seleccionado');
+    var btnCambiar = document.getElementById('btn-cambiar-producto');
+    var timeoutId;
+
+    // Si ya hay un producto seleccionado (ej. error de validación), lo ideal sería cargarlo
+    // Pero para mantenerlo simple, ocultaremos la información seleccionada inicialmente a menos que tenga valor
+    if (inputOcultoProducto.value) {
+        inputBuscador.style.display = 'none';
+        infoSeleccionado.style.display = 'flex';
+        textoSeleccionado.textContent = 'Producto ID: ' + inputOcultoProducto.value + ' (Vuelve a buscar si deseas cambiar)';
+    } else {
+        infoSeleccionado.style.display = 'none';
+    }
+
+    inputBuscador.addEventListener('input', function() {
+        var termino = this.value.trim();
+        clearTimeout(timeoutId);
+
+        if (termino.length < 2) {
+            contenedorResultados.style.display = 'none';
+            return;
+        }
+
+        timeoutId = setTimeout(function() {
+            fetch('/almacen/productos/buscar-json/?q=' + encodeURIComponent(termino))
+                .then(response => response.json())
+                .then(datos => {
+                    contenedorResultados.innerHTML = '';
+                    
+                    if (datos.resultados.length === 0) {
+                        contenedorResultados.innerHTML = '<div style="padding: 10px; color: var(--color-texto-secundario);">No se encontraron productos.</div>';
+                    } else {
+                        datos.resultados.forEach(function(producto) {
+                            var item = document.createElement('div');
+                            item.style.padding = '10px';
+                            item.style.borderBottom = '1px solid var(--color-fondo)';
+                            item.style.cursor = 'pointer';
+                            item.innerHTML = '<strong>' + producto.nombre + '</strong> <span style="color: var(--color-texto-secundario); font-size: 0.9em;">(Cód: ' + producto.codigo + ' | Stock: ' + producto.stock_actual + ')</span>';
+                            
+                            item.addEventListener('mouseenter', function() { this.style.backgroundColor = 'var(--color-fondo)'; });
+                            item.addEventListener('mouseleave', function() { this.style.backgroundColor = 'transparent'; });
+                            
+                            item.addEventListener('click', function() {
+                                seleccionarProducto(producto);
+                            });
+                            
+                            contenedorResultados.appendChild(item);
+                        });
+                    }
+                    contenedorResultados.style.display = 'block';
+                });
+        }, 300);
+    });
+
+    function seleccionarProducto(producto) {
+        inputOcultoProducto.value = producto.id;
+        inputBuscador.style.display = 'none';
+        inputBuscador.value = '';
+        contenedorResultados.style.display = 'none';
+        
+        textoSeleccionado.textContent = producto.nombre + ' (Stock: ' + producto.stock_actual + ')';
+        infoSeleccionado.style.display = 'flex';
+    }
+
+    btnCambiar.addEventListener('click', function() {
+        inputOcultoProducto.value = '';
+        infoSeleccionado.style.display = 'none';
+        inputBuscador.style.display = 'block';
+        inputBuscador.focus();
+    });
+
+    // Cerrar resultados al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (e.target !== inputBuscador && !contenedorResultados.contains(e.target)) {
+            contenedorResultados.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

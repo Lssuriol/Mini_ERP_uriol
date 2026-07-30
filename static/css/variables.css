@@ -1,0 +1,56 @@
+/*
+ * Variables globales de diseño - Uriol Distribuciones S.A.C.
+ * Paleta seria y profesional: azul institucional + acento ámbar.
+ * Sin bordes redondeados en ningún componente del sistema.
+ */
+
+:root {
+    /* Colores de marca */
+    --color-primario: #10243e;
+    --color-primario-claro: #1b3a63;
+    --color-primario-oscuro: #0a1729;
+    --color-acento: #c8791a;
+    --color-acento-oscuro: #a3620f;
+
+    /* Colores de estado */
+    --color-exito: #1e6b3e;
+    --color-exito-fondo: #e7f3ec;
+    --color-error: #a02020;
+    --color-error-fondo: #f8e6e6;
+    --color-advertencia: #8a5a05;
+    --color-advertencia-fondo: #fbf0dc;
+    --color-info: #1c4a73;
+    --color-info-fondo: #e5eef5;
+
+    /* Escala de grises */
+    --color-texto: #0f172a; /* Más oscuro para mejor legibilidad */
+    --color-texto-secundario: #334155; /* Gris más oscuro para asegurar contraste WCAG */
+    --color-borde: #94a3b8; /* Borde más marcado y visible */
+    --color-borde-oscuro: #64748b; 
+    --color-fondo: #e2e8f0; /* Fondo más oscuro para que las tarjetas blancas resalten más */
+    --color-fondo-tarjeta: #ffffff;
+    --color-fondo-encabezado-tabla: #cbd5e1; /* Encabezado de tabla más contrastante */
+
+    /* Tipografía */
+    --fuente-base: 'Segoe UI', Arial, Helvetica, sans-serif;
+    --tamano-fuente-base: 14px;
+    --tamano-fuente-pequena: 12.5px;
+    --tamano-fuente-mediana: 16px;
+    --tamano-fuente-grande: 22px;
+    --tamano-fuente-titulo: 26px;
+
+    /* Espaciados */
+    --espacio-xs: 4px;
+    --espacio-sm: 8px;
+    --espacio-md: 16px;
+    --espacio-lg: 24px;
+    --espacio-xl: 32px;
+
+    /* Estructura */
+    --ancho-barra-lateral: 240px;
+    --alto-encabezado: 64px;
+    --sombra-tarjeta: 0 1px 3px rgba(16, 36, 62, 0.12);
+
+    /* Radio de borde: 0 en todo el sistema (diseño de esquinas rectas) */
+    --radio-borde: 0;
+}

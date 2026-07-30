@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% block titulo %}Productos{% endblock %}
+{% block titulo_pagina %}Catálogo de productos{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <div class="barra-herramientas-tabla">
+        <form method="get" class="barra-herramientas-tabla__filtros">
+            <input type="text" name="buscar" value="{{ termino_busqueda }}" placeholder="Buscar por nombre o código" class="campo-formulario" style="width: 260px;">
+            <select name="categoria" class="campo-formulario" style="width: 200px;">
+                <option value="">Todas las categorías</option>
+                {% for categoria in categorias %}
+                <option value="{{ categoria.id }}" {% if filtro_categoria_actual == categoria.id|stringformat:'s' %}selected{% endif %}>{{ categoria.nombre }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="boton boton--secundario">Filtrar</button>
+        <a href="{% url 'almacen:lista_productos' %}" class="boton" style="color: var(--gris-600); padding: 8px;">Limpiar</a>
+    </form>
+    <a href="{% url 'almacen:crear_producto' %}" class="boton boton--acento">+ Nuevo producto</a>
+</div>
+
+<div class="tabla-envoltorio">
+    <table class="tabla-datos">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th class="celda-numerica">Precio venta</th>
+                <th class="celda-numerica">Stock</th>
+                <th>Estado</th>
+                <th style="text-align: center;">Imagen</th>
+                <th class="celda-acciones">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for producto in page_obj %}
+            <tr>
+                <td>{{ producto.codigo }}</td>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.categoria.nombre }}</td>
+                <td class="celda-numerica">S/ {{ producto.precio_venta }}</td>
+                <td class="celda-numerica">
+                    {{ producto.stock_actual }}
+                    {% if producto.stock_bajo %}<span class="etiqueta etiqueta--advertencia">Bajo</span>{% endif %}
+                </td>
+                <td>
+                    {% if producto.activo %}
+                        <span class="etiqueta etiqueta--exito">Activo</span>
+                    {% else %}
+                        <span class="etiqueta etiqueta--neutro">Inactivo</span>
+                    {% endif %}
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    {% if producto.imagen %}
+                        <img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" style="max-height: 40px; max-width: 40px; object-fit: contain; border-radius: 4px;">
+                    {% else %}
+                        <span style="color: var(--color-borde); font-size: 0.8em; font-style: italic;">Sin imagen</span>
+                    {% endif %}
+                </td>
+                <td class="celda-acciones">
+                    <a href="{% url 'almacen:editar_producto' producto.id %}" class="boton boton--secundario boton--pequeno">Editar</a>
+                    <form method="post" action="{% url 'almacen:alternar_estado_producto' producto.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="boton boton--secundario boton--pequeno">
+                            {% if producto.activo %}Desactivar{% else %}Activar{% endif %}
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="8" class="tabla-vacia">No se encontraron productos.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if page_obj.has_other_pages %}
+<div style="margin-top: var(--espacio-md); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--espacio-sm);">
+    <span style="color: var(--gris-600); font-size: 0.9em;">
+        Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ page_obj.paginator.count }} productos
+    </span>
+    <div style="display: flex; gap: 5px;">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if termino_busqueda %}&buscar={{ termino_busqueda }}{% endif %}{% if filtro_categoria_actual %}&categoria={{ filtro_categoria_actual }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">&laquo; Primero</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if termino_busqueda %}&buscar={{ termino_busqueda }}{% endif %}{% if filtro_categoria_actual %}&categoria={{ filtro_categoria_actual }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">Anterior</a>
+        {% endif %}
+
+        <span class="boton" style="background-color: var(--color-primario); color: white; padding: 5px 15px; cursor: default;">
+            {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if termino_busqueda %}&buscar={{ termino_busqueda }}{% endif %}{% if filtro_categoria_actual %}&categoria={{ filtro_categoria_actual }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">Siguiente</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if termino_busqueda %}&buscar={{ termino_busqueda }}{% endif %}{% if filtro_categoria_actual %}&categoria={{ filtro_categoria_actual }}{% endif %}" class="boton boton--secundario" style="padding: 5px 10px;">Último &raquo;</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+</div>
+{% endblock %}

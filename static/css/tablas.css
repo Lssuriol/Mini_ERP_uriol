@@ -1,0 +1,87 @@
+/* Componentes de tablas: listados de productos, ventas, usuarios, etc. */
+
+.tabla-envoltorio {
+    overflow-x: auto;
+    border: 1px solid var(--color-borde);
+}
+
+.tabla-datos {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--tamano-fuente-base);
+}
+
+.tabla-datos thead th {
+    background-color: var(--color-fondo-encabezado-tabla);
+    text-align: left;
+    padding: 10px var(--espacio-md);
+    font-weight: 600;
+    font-size: var(--tamano-fuente-pequena);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--color-texto-secundario);
+    border-bottom: 2px solid var(--color-borde-oscuro);
+    white-space: nowrap;
+}
+
+.tabla-datos tbody td {
+    padding: 10px var(--espacio-md);
+    border-bottom: 1px solid var(--color-borde);
+    vertical-align: middle;
+}
+
+.tabla-datos tbody tr:hover {
+    background-color: var(--color-fondo);
+}
+
+.tabla-datos tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.tabla-datos .celda-numerica {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+.tabla-datos .celda-acciones {
+    white-space: nowrap;
+    text-align: right;
+}
+
+.tabla-vacia {
+    padding: var(--espacio-xl);
+    text-align: center;
+    color: var(--color-texto-secundario);
+}
+
+/* Etiquetas de estado dentro de tablas */
+.etiqueta {
+    display: inline-block;
+    padding: 2px 9px;
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border: 1px solid transparent;
+}
+
+.etiqueta--exito { background-color: var(--color-exito-fondo); color: var(--color-exito); border-color: var(--color-exito); }
+.etiqueta--error { background-color: var(--color-error-fondo); color: var(--color-error); border-color: var(--color-error); }
+.etiqueta--advertencia { background-color: var(--color-advertencia-fondo); color: var(--color-advertencia); border-color: var(--color-advertencia); }
+.etiqueta--info { background-color: var(--color-info-fondo); color: var(--color-info); border-color: var(--color-info); }
+.etiqueta--neutro { background-color: var(--color-fondo-encabezado-tabla); color: var(--color-texto-secundario); border-color: var(--color-borde-oscuro); }
+
+.barra-herramientas-tabla {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--espacio-md);
+    margin-bottom: var(--espacio-md);
+}
+
+.barra-herramientas-tabla__filtros {
+    display: flex;
+    gap: var(--espacio-sm);
+    flex-wrap: wrap;
+}

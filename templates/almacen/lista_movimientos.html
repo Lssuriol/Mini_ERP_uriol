@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block titulo %}Movimientos de inventario{% endblock %}
+{% block titulo_pagina %}Movimientos de inventario{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <div class="barra-herramientas-tabla">
+        <div></div>
+        <a href="{% url 'almacen:registrar_movimiento_manual' %}" class="boton boton--acento">+ Registrar movimiento</a>
+    </div>
+
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Producto</th>
+                    <th>Tipo</th>
+                    <th class="celda-numerica">Cantidad</th>
+                    <th class="celda-numerica">Stock resultante</th>
+                    <th>Motivo</th>
+                    <th>Registrado por</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movimiento in movimientos %}
+                <tr>
+                    <td>{{ movimiento.fecha_creacion|date:'d/m/Y H:i' }}</td>
+                    <td>{{ movimiento.producto.nombre }}</td>
+                    <td>
+                        {% if movimiento.tipo_movimiento == 'ENTRADA' %}
+                            <span class="etiqueta etiqueta--exito">{{ movimiento.get_tipo_movimiento_display }}</span>
+                        {% elif movimiento.tipo_movimiento == 'SALIDA' %}
+                            <span class="etiqueta etiqueta--info">{{ movimiento.get_tipo_movimiento_display }}</span>
+                        {% else %}
+                            <span class="etiqueta etiqueta--advertencia">{{ movimiento.get_tipo_movimiento_display }}</span>
+                        {% endif %}
+                    </td>
+                    <td class="celda-numerica">{{ movimiento.cantidad }}</td>
+                    <td class="celda-numerica">{{ movimiento.stock_resultante }}</td>
+                    <td>{{ movimiento.motivo|default:'—' }}</td>
+                    <td>{{ movimiento.usuario.get_full_name|default:movimiento.usuario.username }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="tabla-vacia">Aún no se registran movimientos de inventario.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
