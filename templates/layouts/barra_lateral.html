@@ -34,6 +34,7 @@
         </a>
         <a href="{% url 'almacen:lista_categorias' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'lista_categorias' %}barra-lateral__enlace--activo{% endif %}">Categorías</a>
         <a href="{% url 'almacen:lista_movimientos' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'lista_movimientos' %}barra-lateral__enlace--activo{% endif %}">Movimientos de stock</a>
+        <a href="{% url 'almacen:control_vencimientos' %}" class="barra-lateral__enlace {% if request.resolver_match.url_name == 'control_vencimientos' %}barra-lateral__enlace--activo{% endif %}">Control de Vencimientos</a>
         {% endif %}
 
         {% if user.es_administrador %}

@@ -16,6 +16,8 @@ Permite administrar un catálogo de productos, controlar stock en tiempo real me
 
 ## ✨ Características Principales
 - **📦 Control de Inventario en Tiempo Real**: Prevención de condiciones de carrera mediante bloqueos de fila (`select_for_update`) y trazabilidad completa de entradas/salidas.
+- **🏷️ Gestión por Lotes y Vencimientos (FIFO)**: Trazabilidad por número de lote, descargo automático bajo la regla *First In, First Out* y un dashboard dedicado para el control de productos próximos a vencer o caducados.
+- **📷 Escaneo de Códigos de Barras Inteligente**: Uso de lectores láser o cámara web integrada para registrar productos en el POS y Almacén, optimizado para evitar lecturas falsas (ruido).
 - **💻 Punto de Venta (POS) Dinámico**: Interfaz asíncrona (AJAX) ultra rápida para la búsqueda y selección de productos sin recargar la página.
 - **🧾 Facturación Electrónica**: Integración nativa con proveedores de facturación (PSE/OSE) y envío automático de comprobantes PDF/XML por correo electrónico mediante la API de Brevo.
 - **🔐 Gestión de Roles y Permisos**: Roles predefinidos (`Administrador`, `Cajero`, `Inventario`) con control estricto de acceso a vistas mediante decoradores personalizados.
@@ -37,6 +39,7 @@ Este sistema hace uso de diversas plataformas y APIs de terceros para funcionar 
 * **Supabase (PostgreSQL):** Base de datos relacional principal en producción.
 * **Supabase Storage (API S3):** Almacenamiento en la nube (Object Storage) para guardar y distribuir las imágenes de los productos del catálogo.
 * **APIs Perú (dniruc.apisperu.com):** Servicio para consultar automáticamente los datos de clientes ingresando su número de DNI o RUC desde el Punto de Venta.
+* **Open Food Facts API:** Integración para autocompletar instantáneamente el nombre y fotografía de productos nuevos al escanear su código de barras en el módulo de Almacén.
 * **NubeFact:** API de facturación electrónica para enviar los comprobantes emitidos (Boletas/Facturas) a SUNAT de manera automática.
 * **Brevo (anteriormente Sendinblue):** Servidor SMTP transaccional para el envío de comprobantes electrónicos a los correos de los clientes.
 

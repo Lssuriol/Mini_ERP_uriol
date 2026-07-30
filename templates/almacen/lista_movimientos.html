@@ -16,7 +16,7 @@
                     <th>Fecha</th>
                     <th>Producto</th>
                     <th>Tipo</th>
-                    <th class="celda-numerica">Cantidad</th>
+                    <th class="celda-numerica">cantidad</th>
                     <th class="celda-numerica">Stock resultante</th>
                     <th>Motivo</th>
                     <th>Registrado por</th>
@@ -26,7 +26,12 @@
                 {% for movimiento in movimientos %}
                 <tr>
                     <td>{{ movimiento.fecha_creacion|date:'d/m/Y H:i' }}</td>
-                    <td>{{ movimiento.producto.nombre }}</td>
+                    <td>
+                        {{ movimiento.producto.nombre }}
+                        {% if movimiento.lote %}
+                        <br><span class="etiqueta" style="font-size: 0.7em; background-color: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; margin-top: 4px; display: inline-block;">Lote: {{ movimiento.lote.numero_lote|default:"S/N" }}</span>
+                        {% endif %}
+                    </td>
                     <td>
                         {% if movimiento.tipo_movimiento == 'ENTRADA' %}
                             <span class="etiqueta etiqueta--exito">{{ movimiento.get_tipo_movimiento_display }}</span>

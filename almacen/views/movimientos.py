@@ -38,6 +38,8 @@ def registrar_movimiento_manual(request):
                     cantidad=formulario.cleaned_data['cantidad'],
                     usuario=request.user,
                     motivo=formulario.cleaned_data['motivo'],
+                    numero_lote=formulario.cleaned_data.get('numero_lote', ''),
+                    fecha_vencimiento=formulario.cleaned_data.get('fecha_vencimiento'),
                 )
                 messages.success(request, 'Movimiento de inventario registrado correctamente.')
                 return redirect('almacen:lista_movimientos')

@@ -28,6 +28,18 @@
     color: var(--color-primario);
 }
 
+@media (max-width: 1024px) {
+    .tarjeta-kpi {
+        padding: var(--espacio-sm) var(--espacio-md);
+    }
+    .tarjeta-kpi__valor {
+        font-size: 22px;
+    }
+    .tarjeta-kpi__etiqueta {
+        margin: 0 0 4px;
+    }
+}
+
 /* --- Mensajes / alertas del sistema --- */
 .alerta {
     padding: 11px var(--espacio-md);
@@ -73,7 +85,7 @@
     align-items: start;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 767px) {
     .pos-contenedor {
         grid-template-columns: 1fr;
     }
@@ -194,7 +206,40 @@
     .barra-lateral, .encabezado, .no-imprimir {
         display: none !important;
     }
-    .zona-contenido {
-        padding: 0;
-    }
+}
+
+/* --- Efecto de Escáner (Láser) --- */
+.scanner-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    background: #000;
+}
+
+.scanner-container video {
+    width: 100%;
+    max-height: 300px;
+    display: block;
+    margin: 0;
+    border: none;
+}
+
+.scanner-laser {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: rgba(255, 0, 0, 0.7);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.9), 0 0 20px rgba(255, 0, 0, 0.5);
+    z-index: 2;
+    animation: scan-laser 2s infinite ease-in-out;
+}
+
+@keyframes scan-laser {
+    0% { top: 5%; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { top: 95%; opacity: 0; }
 }

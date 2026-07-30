@@ -19,4 +19,6 @@ urlpatterns = [
 
     path('movimientos/', views.lista_movimientos, name='lista_movimientos'),
     path('movimientos/nuevo/', views.registrar_movimiento_manual, name='registrar_movimiento_manual'),
+    
+    path('vencimientos/', views.control_vencimientos, name='control_vencimientos'),
 ]

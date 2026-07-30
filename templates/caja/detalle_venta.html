@@ -8,13 +8,13 @@
 {% endblock %}
 
 {% block contenido %}
-<div class="no-imprimir" style="margin-bottom: var(--espacio-md); display:flex; gap: var(--espacio-sm);">
-    <button onclick="window.print()" class="boton boton--secundario">Imprimir comprobante</button>
+<div class="no-imprimir" style="margin-bottom: var(--espacio-md); display:flex; flex-wrap: wrap; gap: var(--espacio-sm);">
+    <button onclick="window.print()" class="boton boton--secundario boton--pequeno">Imprimir comprobante</button>
     {% if venta.estado == 'COMPLETADA' %}
-        <a href="{% url 'caja:anular_venta' venta.id %}" class="boton boton--peligro">Anular venta</a>
+        <a href="{% url 'caja:anular_venta' venta.id %}" class="boton boton--peligro boton--pequeno">Anular venta</a>
     {% endif %}
-    <a href="{% url 'caja:punto_venta' %}" class="boton boton--primario">Ir a punto de venta</a>
-    <a href="{% url 'caja:lista_ventas' %}" class="boton boton--secundario">Ir al historial</a>
+    <a href="{% url 'caja:punto_venta' %}" class="boton boton--primario boton--pequeno">Ir a punto de venta</a>
+    <a href="{% url 'caja:lista_ventas' %}" class="boton boton--secundario boton--pequeno">Ir al historial</a>
 </div>
 
 {% if venta.comprobante_electronico %}

@@ -4,8 +4,8 @@
 
 {% block contenido %}
 <div class="tarjeta" style="margin-bottom: var(--espacio-lg);">
-    <form method="get" style="display: flex; gap: var(--espacio-md); align-items: flex-end; flex-wrap: wrap;">
-        <div class="campo">
+    <form method="get" class="fila-formulario" style="margin-bottom: var(--espacio-lg); align-items:flex-end;">
+        <div class="grupo-formulario" style="margin-bottom:0;">
             <label class="campo__etiqueta">Filtrar por estado</label>
             <select name="estado" class="campo__entrada">
                 <option value="">Todos los estados</option>
@@ -14,7 +14,7 @@
                 {% endfor %}
             </select>
         </div>
-        <div class="campo">
+        <div class="grupo-formulario" style="margin-bottom:0;">
             <button type="submit" class="boton boton--primario">Filtrar</button>
             {% if estado_seleccionado %}
                 <a href="{% url 'reportes:reporte_comprobantes' %}" class="boton boton--fantasma" style="margin-left: 8px;">Limpiar</a>

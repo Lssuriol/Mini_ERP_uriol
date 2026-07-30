@@ -25,7 +25,10 @@
             <div style="background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 500px; text-align: center;">
                 <h3 style="margin-top: 0; margin-bottom: 15px;">Escanear productos</h3>
                 <p style="margin-bottom: 15px; color: #666; font-size: 0.9em;">Apunta el código de barras. Puedes escanear varios productos consecutivamente.</p>
-                <video id="pos-lector-camara" style="width: 100%; max-height: 300px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; background: #000;"></video>
+                <div class="scanner-container">
+                    <video id="pos-lector-camara"></video>
+                    <div class="scanner-laser"></div>
+                </div>
                 <button type="button" id="pos-btn-cerrar-escaner" class="boton boton--secundario">Terminar de escanear</button>
             </div>
         </div>

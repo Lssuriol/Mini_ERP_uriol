@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block titulo %}Control de Vencimientos{% endblock %}
+{% block titulo_pagina %}Control de Fechas de Vencimiento{% endblock %}
+
+{% block contenido %}
+<div class="tarjeta">
+    <p>Este panel te permite monitorear los lotes de productos según su fecha de vencimiento. Solo se muestran los lotes que tienen stock disponible.</p>
+
+    <!-- Vencidos -->
+    <h3 style="color: #ef4444; border-bottom: 2px solid #ef4444; padding-bottom: 5px; margin-top: 20px;">
+        Vencidos ({{ vencidos|length }})
+    </h3>
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Lote</th>
+                    <th>Producto</th>
+                    <th>Vencimiento</th>
+                    <th class="celda-numerica">Stock Disponible</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lote in vencidos %}
+                <tr style="background-color: #fef2f2;">
+                    <td>{{ lote.numero_lote|default:'S/N' }}</td>
+                    <td>{{ lote.producto.nombre }}</td>
+                    <td style="color: #ef4444; font-weight: bold;">{{ lote.fecha_vencimiento|date:'d/m/Y' }}</td>
+                    <td class="celda-numerica">{{ lote.stock_actual }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="tabla-vacia">No hay lotes vencidos.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Próximos a vencer -->
+    <h3 style="color: #f59e0b; border-bottom: 2px solid #f59e0b; padding-bottom: 5px; margin-top: 30px;">
+        Próximos a vencer (30 días) ({{ proximos|length }})
+    </h3>
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Lote</th>
+                    <th>Producto</th>
+                    <th>Vencimiento</th>
+                    <th class="celda-numerica">Stock Disponible</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lote in proximos %}
+                <tr style="background-color: #fffbeb;">
+                    <td>{{ lote.numero_lote|default:'S/N' }}</td>
+                    <td>{{ lote.producto.nombre }}</td>
+                    <td style="color: #d97706; font-weight: bold;">{{ lote.fecha_vencimiento|date:'d/m/Y' }}</td>
+                    <td class="celda-numerica">{{ lote.stock_actual }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="tabla-vacia">No hay lotes próximos a vencer.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Vigentes -->
+    <h3 style="color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 5px; margin-top: 30px;">
+        Vigentes ({{ vigentes|length }})
+    </h3>
+    <div class="tabla-envoltorio">
+        <table class="tabla-datos">
+            <thead>
+                <tr>
+                    <th>Lote</th>
+                    <th>Producto</th>
+                    <th>Vencimiento</th>
+                    <th class="celda-numerica">Stock Disponible</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lote in vigentes %}
+                <tr style="background-color: #ecfdf5;">
+                    <td>{{ lote.numero_lote|default:'S/N' }}</td>
+                    <td>{{ lote.producto.nombre }}</td>
+                    <td style="color: #059669;">{{ lote.fecha_vencimiento|date:'d/m/Y' }}</td>
+                    <td class="celda-numerica">{{ lote.stock_actual }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" class="tabla-vacia">No hay lotes vigentes con fecha registrada.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

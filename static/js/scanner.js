@@ -32,7 +32,19 @@ function startScanning(videoElementId, onDecodeCallback) {
     }
 
     if (!codeReader) {
-        codeReader = new ZXing.BrowserMultiFormatReader();
+        // Configuramos los formatos específicos de productos para evitar lecturas "basura" (falsos positivos)
+        const hints = new Map();
+        const formats = [
+            ZXing.BarcodeFormat.EAN_13,
+            ZXing.BarcodeFormat.EAN_8,
+            ZXing.BarcodeFormat.UPC_A,
+            ZXing.BarcodeFormat.UPC_E,
+            ZXing.BarcodeFormat.CODE_128,
+            ZXing.BarcodeFormat.QR_CODE
+        ];
+        hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS, formats);
+        
+        codeReader = new ZXing.BrowserMultiFormatReader(hints);
     }
 
     if (isScanning) return;
@@ -42,6 +54,9 @@ function startScanning(videoElementId, onDecodeCallback) {
         if (result) {
             var decodedText = result.getText();
             var ahora = new Date().getTime();
+
+            // Evitar escaneos basura (falsos positivos menores a 5 caracteres)
+            if (decodedText.length < 5) return;
 
             // Evitar escaneos duplicados del mismo producto en menos de 2 segundos
             if (decodedText === ultimoCodigoEscaneado && (ahora - tiempoUltimoEscaneo) < 2000) {
@@ -70,5 +85,33 @@ function stopScanning() {
     if (codeReader) {
         codeReader.reset();
         isScanning = false;
+    }
+}
+
+// Función global para dar un destello de color al escáner
+function flashScanner(color) {
+    var container = document.querySelector('.scanner-container');
+    if (container) {
+        var overlay = document.createElement('div');
+        overlay.style.position = 'absolute';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = color || 'rgba(76, 175, 80, 0.6)';
+        overlay.style.zIndex = '10';
+        overlay.style.transition = 'opacity 0.4s ease-out';
+        overlay.style.pointerEvents = 'none';
+        container.appendChild(overlay);
+        
+        // Forzar renderizado
+        overlay.getBoundingClientRect();
+        
+        overlay.style.opacity = '0';
+        setTimeout(function() {
+            if (container.contains(overlay)) {
+                container.removeChild(overlay);
+            }
+        }, 400);
     }
 }

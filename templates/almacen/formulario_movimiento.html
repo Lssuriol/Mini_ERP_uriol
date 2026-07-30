@@ -38,6 +38,18 @@
             <label for="{{ formulario.motivo.id_for_label }}">Motivo / observación</label>
             {{ formulario.motivo }}
         </div>
+        
+        <div id="seccion-lote" class="fila-formulario" style="display: none; background: #f8fafc; padding: 15px; border-radius: 4px; border: 1px dashed #cbd5e1; margin-bottom: 20px;">
+            <div class="grupo-formulario">
+                <label for="{{ formulario.numero_lote.id_for_label }}">{{ formulario.numero_lote.label }}</label>
+                {{ formulario.numero_lote }}
+            </div>
+            <div class="grupo-formulario">
+                <label for="{{ formulario.fecha_vencimiento.id_for_label }}">{{ formulario.fecha_vencimiento.label }}</label>
+                {{ formulario.fecha_vencimiento }}
+                {% if formulario.fecha_vencimiento.errors %}<div class="texto-error" style="color: red; font-size: 0.85em; margin-top: 5px;">{{ formulario.fecha_vencimiento.errors.0 }}</div>{% endif %}
+            </div>
+        </div>
         <div class="acciones-formulario">
             <button type="submit" class="boton boton--primario">Registrar</button>
             <a href="{% url 'almacen:lista_movimientos' %}" class="boton boton--secundario">Cancelar</a>
@@ -128,6 +140,21 @@ document.addEventListener('DOMContentLoaded', function() {
             contenedorResultados.style.display = 'none';
         }
     });
+
+    // Lógica para mostrar/ocultar campos de Lote según tipo de movimiento
+    var selectTipo = document.getElementById('id_tipo_movimiento');
+    var seccionLote = document.getElementById('seccion-lote');
+    
+    function toggleLote() {
+        if (selectTipo.value === 'ENTRADA') {
+            seccionLote.style.display = 'flex';
+        } else {
+            seccionLote.style.display = 'none';
+        }
+    }
+    
+    selectTipo.addEventListener('change', toggleLote);
+    toggleLote(); // Ejecutar al inicio
 });
 </script>
 {% endblock %}

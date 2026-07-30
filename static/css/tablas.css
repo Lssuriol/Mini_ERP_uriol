@@ -85,3 +85,67 @@
     gap: var(--espacio-sm);
     flex-wrap: wrap;
 }
+
+@media (max-width: 767px) {
+    .tabla-envoltorio {
+        border: none;
+    }
+
+    .tabla-datos, 
+    .tabla-datos tbody, 
+    .tabla-datos tr, 
+    .tabla-datos td {
+        display: block;
+        width: 100%;
+    }
+
+    .tabla-datos thead {
+        display: none;
+    }
+
+    .tabla-datos tr {
+        margin-bottom: var(--espacio-md);
+        border: 1px solid var(--color-borde-oscuro);
+        border-radius: var(--radio-borde);
+        background-color: var(--color-fondo-tarjeta);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .tabla-datos td {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        text-align: left !important;
+        position: relative;
+        border-bottom: 1px solid var(--color-borde);
+        padding: 10px var(--espacio-md);
+        min-height: auto;
+    }
+
+    .tabla-datos td:last-child {
+        border-bottom: none;
+    }
+
+    .tabla-datos td::before {
+        content: attr(data-label);
+        position: static;
+        transform: none;
+        width: 100%;
+        margin-bottom: 4px;
+        white-space: normal;
+        text-align: left;
+        font-weight: 600;
+        font-size: 11px;
+        color: var(--color-texto-secundario);
+        text-transform: uppercase;
+    }
+    
+    .tabla-vacia {
+        text-align: center !important;
+        padding-left: 10px !important;
+    }
+    
+    .tabla-vacia::before {
+        display: none;
+    }
+}

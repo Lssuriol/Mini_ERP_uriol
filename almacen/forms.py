@@ -32,7 +32,7 @@ class FormularioProducto(forms.ModelForm):
         model = Producto
         fields = [
             'codigo', 'nombre', 'descripcion', 'categoria', 'imagen',
-            'precio_compra', 'precio_venta', 'stock_minimo', 'unidad_medida', 'activo',
+            'precio_compra', 'precio_venta', 'stock_minimo', 'unidad_medida', 'activo', 'es_perecedero'
         ]
         widgets = {
             'codigo': forms.TextInput(attrs={'class': 'campo-formulario'}),
@@ -44,7 +44,18 @@ class FormularioProducto(forms.ModelForm):
             'precio_venta': forms.NumberInput(attrs={'class': 'campo-formulario', 'step': '0.01'}),
             'stock_minimo': forms.NumberInput(attrs={'class': 'campo-formulario'}),
             'unidad_medida': forms.TextInput(attrs={'class': 'campo-formulario'}),
+            'es_perecedero': forms.CheckboxInput(attrs={'class': 'campo-formulario-checkbox'}),
         }
+
+    def clean_codigo(self):
+        codigo = (self.cleaned_data.get('codigo') or '').strip()
+        qs = Producto.objects.filter(codigo__iexact=codigo)
+        if self.instance and self.instance.pk:
+            qs = qs.exclude(pk=self.instance.pk)
+            
+        if qs.exists():
+            raise forms.ValidationError(f"Ya existe un producto registrado con el código '{codigo}'.")
+        return codigo
 
     def clean_imagen_url(self):
         url = (self.cleaned_data.get('imagen_url') or '').strip()
@@ -134,3 +145,25 @@ class FormularioMovimientoManual(forms.Form):
         widget=forms.TextInput(attrs={'class': 'campo-formulario', 'placeholder': 'Opcional'}),
         label='Motivo / observación',
     )
+    numero_lote = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'campo-formulario', 'placeholder': 'Ej. L-001 (Opcional)'}),
+        label='Número de lote',
+    )
+    fecha_vencimiento = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'class': 'campo-formulario', 'type': 'date'}),
+        label='Fecha de vencimiento (Opcional)',
+    )
+
+    def clean(self):
+        datos_limpios = super().clean()
+        producto = datos_limpios.get('producto')
+        tipo_movimiento = datos_limpios.get('tipo_movimiento')
+        fecha_vencimiento = datos_limpios.get('fecha_vencimiento')
+
+        if producto and tipo_movimiento == MovimientoInventario.TipoMovimiento.ENTRADA:
+            if producto.es_perecedero and not fecha_vencimiento:
+                self.add_error('fecha_vencimiento', 'La fecha de vencimiento es obligatoria para productos perecederos.')
+
+        return datos_limpios

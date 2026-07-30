@@ -85,26 +85,29 @@ def crear_categorias():
 
 def crear_productos(categorias, usuario_responsable):
     """Crea un catálogo de ejemplo con productos típicos de un minimarket."""
+    # (codigo, nombre, categoria, p_compra, p_venta, stock_inicial, stock_min, es_perecedero)
     productos_ejemplo = [
-        ('AB001', 'Arroz Costeño 5kg', 'Abarrotes', 16.90, 21.90, 40, 10),
-        ('AB002', 'Aceite Primor 1L', 'Abarrotes', 9.50, 12.90, 35, 8),
-        ('AB003', 'Azúcar Rubia Bella Bolsa 1kg', 'Abarrotes', 3.60, 5.20, 50, 12),
-        ('AB004', 'Fideos Don Vittorio 500g', 'Abarrotes', 2.80, 4.00, 60, 15),
-        ('BE001', 'Inca Kola 1.5L', 'Bebidas', 4.80, 7.00, 45, 10),
-        ('BE002', 'Agua San Luis 625ml', 'Bebidas', 1.20, 2.00, 80, 20),
-        ('BE003', 'Jugo Frugos Naranja 1L', 'Bebidas', 3.50, 5.50, 30, 8),
-        ('LA001', 'Leche Gloria Evaporada 400g', 'Lácteos', 3.90, 5.20, 55, 12),
-        ('LA002', 'Yogurt Gloria Fresa 1L', 'Lácteos', 6.20, 8.90, 20, 6),
-        ('LI001', 'Detergente Ariel 500g', 'Limpieza', 5.10, 7.50, 25, 6),
-        ('LI002', 'Lejía Clorox 1L', 'Limpieza', 3.20, 4.80, 30, 8),
-        ('CP001', 'Jabón Protex 90g', 'Cuidado Personal', 2.10, 3.20, 40, 10),
-        ('CP002', 'Shampoo Sedal 350ml', 'Cuidado Personal', 8.50, 12.50, 18, 5),
-        ('SN001', 'Galletas Oreo 118g', 'Snacks', 2.60, 4.00, 50, 12),
-        ('SN002', 'Papitas Lays 45g', 'Snacks', 2.20, 3.50, 45, 10),
+        ('AB001', 'Arroz Costeño 5kg', 'Abarrotes', 16.90, 21.90, 40, 10, False),
+        ('AB002', 'Aceite Primor 1L', 'Abarrotes', 9.50, 12.90, 35, 8, False),
+        ('AB003', 'Azúcar Rubia Bella Bolsa 1kg', 'Abarrotes', 3.60, 5.20, 50, 12, False),
+        ('AB004', 'Fideos Don Vittorio 500g', 'Abarrotes', 2.80, 4.00, 60, 15, False),
+        ('BE001', 'Inca Kola 1.5L', 'Bebidas', 4.80, 7.00, 45, 10, False),
+        ('BE002', 'Agua San Luis 625ml', 'Bebidas', 1.20, 2.00, 80, 20, False),
+        ('BE003', 'Jugo Frugos Naranja 1L', 'Bebidas', 3.50, 5.50, 30, 8, True),
+        ('LA001', 'Leche Gloria Evaporada 400g', 'Lácteos', 3.90, 5.20, 55, 12, True),
+        ('LA002', 'Yogurt Gloria Fresa 1L', 'Lácteos', 6.20, 8.90, 20, 6, True),
+        ('LI001', 'Detergente Ariel 500g', 'Limpieza', 5.10, 7.50, 25, 6, False),
+        ('LI002', 'Lejía Clorox 1L', 'Limpieza', 3.20, 4.80, 30, 8, False),
+        ('CP001', 'Jabón Protex 90g', 'Cuidado Personal', 2.10, 3.20, 40, 10, False),
+        ('CP002', 'Shampoo Sedal 350ml', 'Cuidado Personal', 8.50, 12.50, 18, 5, False),
+        ('SN001', 'Galletas Oreo 118g', 'Snacks', 2.60, 4.00, 50, 12, False),
+        ('SN002', 'Papitas Lays 45g', 'Snacks', 2.20, 3.50, 45, 10, False),
     ]
 
+    from datetime import date, timedelta
+    
     productos_creados = 0
-    for codigo, nombre, nombre_categoria, precio_compra, precio_venta, stock_inicial, stock_minimo in productos_ejemplo:
+    for codigo, nombre, nombre_categoria, precio_compra, precio_venta, stock_inicial, stock_minimo, es_perecedero in productos_ejemplo:
         producto, creado = Producto.objects.get_or_create(
             codigo=codigo,
             defaults={
@@ -114,11 +117,19 @@ def crear_productos(categorias, usuario_responsable):
                 'precio_venta': precio_venta,
                 'stock_minimo': stock_minimo,
                 'unidad_medida': 'UND',
+                'es_perecedero': es_perecedero,
             },
         )
 
         if creado:
             productos_creados += 1
+            
+            # Si es perecedero, le asignamos un lote inicial y fecha de vencimiento (20 dias desde hoy)
+            kwargs_adicionales = {}
+            if es_perecedero:
+                kwargs_adicionales['numero_lote'] = f"LOTE-INI-{codigo}"
+                kwargs_adicionales['fecha_vencimiento'] = date.today() + timedelta(days=20)
+            
             # Registra el stock inicial como un movimiento de ENTRADA, para
             # mantener la trazabilidad completa desde el primer momento.
             registrar_movimiento(
@@ -127,6 +138,7 @@ def crear_productos(categorias, usuario_responsable):
                 cantidad=stock_inicial,
                 usuario=usuario_responsable,
                 motivo='Carga inicial de inventario (seed)',
+                **kwargs_adicionales
             )
 
     print(f'  {productos_creados} productos nuevos creados con su stock inicial.')

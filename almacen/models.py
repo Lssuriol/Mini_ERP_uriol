@@ -53,6 +53,7 @@ class Producto(ModeloBase):
     unidad_medida = models.CharField(max_length=20, default='UND', verbose_name='Unidad de medida')
 
     activo = models.BooleanField(default=True, verbose_name='¿Producto activo?')
+    es_perecedero = models.BooleanField(default=False, verbose_name='¿Es perecedero?')
 
     class Meta:
         verbose_name = 'Producto'
@@ -75,6 +76,31 @@ class Producto(ModeloBase):
         return self.precio_venta
 
 
+class Lote(ModeloBase):
+    """
+    Agrupación de unidades de un producto ingresadas en una fecha específica,
+    permitiendo control de fechas de vencimiento y trazabilidad (FIFO).
+    """
+
+    producto = models.ForeignKey(
+        Producto, on_delete=models.CASCADE, related_name='lotes', verbose_name='Producto'
+    )
+    numero_lote = models.CharField(max_length=50, blank=True, verbose_name='Número de Lote')
+    fecha_vencimiento = models.DateField(null=True, blank=True, verbose_name='Fecha de vencimiento')
+    
+    stock_inicial = models.PositiveIntegerField(verbose_name='Stock inicial')
+    stock_actual = models.PositiveIntegerField(verbose_name='Stock actual')
+
+    class Meta:
+        verbose_name = 'Lote'
+        verbose_name_plural = 'Lotes'
+        ordering = ['fecha_creacion']
+
+    def __str__(self):
+        vencimiento = f" (Vence: {self.fecha_vencimiento.strftime('%d/%m/%Y')})" if self.fecha_vencimiento else ""
+        return f"{self.producto.nombre} - Lote: {self.numero_lote or 'N/A'}{vencimiento}"
+
+
 class MovimientoInventario(ModeloBase):
     """
     Registro histórico de cada entrada o salida de stock de un producto.
@@ -91,6 +117,9 @@ class MovimientoInventario(ModeloBase):
 
     producto = models.ForeignKey(
         Producto, on_delete=models.PROTECT, related_name='movimientos', verbose_name='Producto',
+    )
+    lote = models.ForeignKey(
+        Lote, on_delete=models.SET_NULL, null=True, blank=True, related_name='movimientos', verbose_name='Lote',
     )
     tipo_movimiento = models.CharField(max_length=10, choices=TipoMovimiento.choices, verbose_name='Tipo de movimiento')
     cantidad = models.PositiveIntegerField(verbose_name='Cantidad')

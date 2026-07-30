@@ -54,12 +54,15 @@ document.addEventListener('DOMContentLoaded', function () {
                         agregarProductoAlCarrito(coincidenciaExacta);
                         campoBusqueda.value = '';
                         contenedorResultados.style.display = 'none';
+                        if (typeof flashScanner === 'function') flashScanner('rgba(76, 175, 80, 0.6)');
                     } else if (datos.resultados.length === 1) {
                         agregarProductoAlCarrito(datos.resultados[0]);
                         campoBusqueda.value = '';
                         contenedorResultados.style.display = 'none';
+                        if (typeof flashScanner === 'function') flashScanner('rgba(76, 175, 80, 0.6)');
                     } else {
                         buscarProductos(termino);
+                        if (typeof flashScanner === 'function') flashScanner('rgba(244, 67, 54, 0.6)');
                     }
                 });
         }
@@ -86,13 +89,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 bubbles: true
             });
             campoBusqueda.dispatchEvent(event);
-            
-            // Dar feedback visual sutil de que se leyó
-            var lector = document.getElementById('pos-lector-camara');
-            if (lector) {
-                lector.style.outline = '4px solid #4CAF50';
-                setTimeout(function() { lector.style.outline = 'none'; }, 300);
-            }
         });
     }
 

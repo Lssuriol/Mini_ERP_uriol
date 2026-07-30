@@ -4,21 +4,21 @@
 
 {% block contenido %}
 <div class="tarjeta" style="margin-bottom: var(--espacio-lg);">
-    <form method="get" style="display: flex; gap: var(--espacio-md); align-items: flex-end; flex-wrap: wrap;">
-        <div class="campo">
-            <label class="campo__etiqueta">Desde</label>
-            <input type="date" name="fecha_inicio" class="campo__entrada" value="{{ fecha_inicio }}" required>
+    <form method="get" class="fila-formulario" style="margin-bottom: var(--espacio-lg); align-items:flex-end;">
+        <div class="grupo-formulario" style="margin-bottom:0;">
+            <label for="fecha_inicio">Desde</label>
+            <input type="date" name="fecha_inicio" id="fecha_inicio" value="{{ fecha_inicio }}" class="campo-formulario" required>
         </div>
-        <div class="campo">
-            <label class="campo__etiqueta">Hasta</label>
-            <input type="date" name="fecha_fin" class="campo__entrada" value="{{ fecha_fin }}" required>
+        <div class="grupo-formulario" style="margin-bottom:0;">
+            <label for="fecha_fin">Hasta</label>
+            <input type="date" name="fecha_fin" id="fecha_fin" value="{{ fecha_fin }}" class="campo-formulario" required>
         </div>
-        <div class="campo" style="width: 150px;">
-            <label class="campo__etiqueta" title="Se mostrarán productos con ventas iguales o menores a este número">Umbral de ventas</label>
-            <input type="number" name="umbral" class="campo__entrada" value="{{ umbral }}" min="0" required>
+        <div class="grupo-formulario" style="margin-bottom:0;">
+            <label for="umbral" title="Se mostrarán productos con ventas iguales o menores a este número">Umbral de ventas</label>
+            <input type="number" name="umbral" id="umbral" class="campo-formulario" value="{{ umbral }}" min="0" required>
         </div>
-        <div class="campo">
-            <button type="submit" class="boton boton--primario">Filtrar</button>
+        <div class="grupo-formulario" style="margin-bottom:0;">
+            <button type="submit" class="boton boton--primario" style="width: 100%;">Filtrar</button>
         </div>
     </form>
 </div>
