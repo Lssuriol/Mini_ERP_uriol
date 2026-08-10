@@ -103,46 +103,68 @@
         display: none;
     }
 
+    /* Cada fila = una tarjeta compacta */
     .tabla-datos tr {
-        margin-bottom: var(--espacio-md);
-        border: 1px solid var(--color-borde-oscuro);
-        border-radius: var(--radio-borde);
+        margin-bottom: 8px;
+        border: 1px solid var(--color-borde);
         background-color: var(--color-fondo-tarjeta);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        padding: 10px 12px;
     }
-    
+
+    /* Cada celda = una línea horizontal compacta (label a la izq, valor a la der) */
     .tabla-datos td {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        text-align: left !important;
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        text-align: right !important;
         position: relative;
-        border-bottom: 1px solid var(--color-borde);
-        padding: 10px var(--espacio-md);
+        border-bottom: 1px solid var(--color-fondo); /* Separador sutil entre campos */
+        padding: 6px 0;
         min-height: auto;
+        font-size: 14px;
+        line-height: 1.3;
     }
 
     .tabla-datos td:last-child {
         border-bottom: none;
     }
 
+    /* Label inline a la izquierda, compacto */
     .tabla-datos td::before {
-        content: attr(data-label);
+        content: attr(data-label) ":";
         position: static;
         transform: none;
-        width: 100%;
-        margin-bottom: 4px;
-        white-space: normal;
+        flex-shrink: 0;
+        width: auto;
+        min-width: 0;
+        margin-bottom: 0;
+        white-space: nowrap;
         text-align: left;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 11px;
         color: var(--color-texto-secundario);
         text-transform: uppercase;
+        letter-spacing: 0.2px;
     }
-    
+
+    /* When there's no data-label, hide the ::before */
+    .tabla-datos td:not([data-label])::before,
+    .tabla-datos td[data-label=""]::before {
+        display: none;
+    }
+
+    /* Ocultar celdas vacías sin label */
+    .tabla-datos td:empty {
+        display: none;
+    }
+
     .tabla-vacia {
         text-align: center !important;
-        padding-left: 10px !important;
+        padding: 16px 10px !important;
+        display: block !important;
     }
     
     .tabla-vacia::before {

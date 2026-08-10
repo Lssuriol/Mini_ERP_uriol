@@ -1,0 +1,404 @@
+/*
+ * Mobile-first overrides — Transforma el ERP en una experiencia tipo app móvil.
+ * Optimizado para iPhone (Safari) y Android (Chrome).
+ * Se carga después de los demás CSS para sobreescribir selectivamente.
+ */
+
+/* ===== VARIABLES MÓVILES ===== */
+@media (max-width: 767px) {
+    :root {
+        --espacio-lg: 16px;
+        --espacio-md: 12px;
+        --espacio-sm: 6px;
+        --tamano-fuente-base: 15px;
+        --tamano-fuente-pequena: 12px;
+        --tamano-fuente-mediana: 16px;
+        --tamano-fuente-grande: 18px;
+    }
+}
+
+/* ===== CUERPO & LAYOUT ===== */
+@media (max-width: 767px) {
+    html {
+        /* Previene el bounce en iOS Safari */
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior-y: contain;
+    }
+
+    .contenedor-app {
+        flex-direction: column;
+    }
+
+    .contenido-principal {
+        min-height: 100vh;
+        min-height: 100svh; /* Safe viewport height para iOS */
+    }
+
+    /* ===== HEADER TIPO APP ===== */
+    .encabezado {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        height: 56px;
+        padding: 0 12px;
+        background-color: var(--color-primario);
+        color: #ffffff;
+        border-bottom: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .encabezado__titulo {
+        font-size: 16px;
+        font-weight: 600;
+        color: #ffffff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: calc(100vw - 120px);
+    }
+
+    .encabezado__menu-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        margin-right: 10px;
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .encabezado__usuario > a {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        border-color: rgba(255, 255, 255, 0.3);
+        font-size: 12px;
+        padding: 6px 12px;
+    }
+
+    /* ===== SIDEBAR TIPO APP ===== */
+    .barra-lateral {
+        width: 280px;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .barra-lateral__enlace {
+        padding: 13px 16px;
+        font-size: 15px;
+        border-left-width: 3px;
+    }
+
+    .barra-lateral__enlace:active {
+        background-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .barra-lateral__seccion-titulo {
+        font-size: 11px;
+        padding: 16px 16px 6px;
+    }
+
+    .overlay-sidebar {
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
+
+    /* ===== ZONA DE CONTENIDO ===== */
+    .zona-contenido {
+        padding: 12px;
+        padding-bottom: 24px;
+        background-color: var(--color-fondo);
+    }
+
+    /* ===== TARJETAS ===== */
+    .tarjeta {
+        padding: 14px;
+        margin-bottom: 12px;
+        border: 1px solid var(--color-borde);
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .tarjeta__titulo {
+        font-size: 14px;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+    }
+
+    /* ===== KPI CARDS — Estilo app ===== */
+    .tarjeta-kpi {
+        padding: 12px 14px;
+        border-left-width: 4px;
+    }
+
+    .tarjeta-kpi__etiqueta {
+        font-size: 10.5px;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+    }
+
+    .tarjeta-kpi__valor {
+        font-size: 22px;
+        line-height: 1.1;
+    }
+
+    /* Cuadrícula de KPIs: 2 columnas en móvil */
+    .cuadricula--4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px;
+    }
+
+    .cuadricula--2,
+    .cuadricula--3 {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    /* ===== TABLAS EN MODO CARD COMPACTO ===== */
+    .tabla-envoltorio {
+        border: none;
+        overflow-x: visible;
+    }
+
+    .tabla-datos tr {
+        padding: 10px 12px;
+    }
+
+    .tabla-datos td {
+        font-size: 13.5px;
+    }
+
+    .tabla-datos td::before {
+        font-size: 10px;
+        letter-spacing: 0.3px;
+    }
+
+    /* ===== FORMULARIOS TIPO APP ===== */
+    .campo-formulario,
+    select.campo-formulario,
+    .campo__entrada {
+        padding: 12px;
+        font-size: 16px; /* 16px evita zoom automático en iOS */
+        border: 1px solid var(--color-borde-oscuro);
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    .campo-formulario:focus,
+    .campo__entrada:focus {
+        border-color: var(--color-primario);
+        box-shadow: 0 0 0 3px rgba(16, 36, 62, 0.12);
+    }
+
+    .grupo-formulario label,
+    .campo__etiqueta {
+        font-size: 11px;
+        margin-bottom: 5px;
+    }
+
+    /* ===== BOTONES TIPO APP ===== */
+    .boton {
+        padding: 12px 18px;
+        font-size: 15px;
+        min-height: 44px; /* Mínimo recomendado por Apple (44pt) y Google (48dp) */
+        touch-action: manipulation; /* Elimina delay de 300ms en mobile */
+    }
+
+    .boton--primario,
+    .boton--acento {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .boton--pequeno {
+        padding: 8px 14px;
+        font-size: 13px;
+        min-height: 36px;
+    }
+
+    .acciones-formulario {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .acciones-formulario .boton {
+        width: 100%;
+    }
+
+    /* ===== FILTROS DE REPORTE ===== */
+    .tarjeta form {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    .tarjeta form .campo,
+    .tarjeta form .grupo-formulario {
+        width: 100% !important;
+    }
+
+    .tarjeta form .boton {
+        width: 100%;
+    }
+
+    /* ===== ETIQUETAS DE ESTADO ===== */
+    .etiqueta {
+        font-size: 10.5px;
+        padding: 3px 10px;
+    }
+
+    .rol-etiqueta {
+        display: none;
+    }
+
+    /* ===== ALERTS/MENSAJES ===== */
+    .alerta {
+        padding: 12px 14px;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    /* ===== POS (Punto de Venta) ===== */
+    .pos-contenedor {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .pos-resultados__item {
+        padding: 12px 14px;
+        min-height: 48px;
+    }
+
+    .pos-carrito__cantidad {
+        width: 60px;
+        padding: 8px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .pos-resumen__linea {
+        font-size: 15px;
+        padding: 6px 0;
+    }
+
+    .pos-resumen__linea--total {
+        font-size: 22px;
+    }
+
+    /* ===== PAGINACIÓN ===== */
+    .tarjeta > div[style*="justify-content: center"] {
+        flex-wrap: wrap;
+    }
+
+    .tarjeta > div[style*="justify-content: center"] .boton {
+        min-width: 44px;
+        min-height: 44px;
+    }
+
+    /* ===== GRÁFICOS ===== */
+    .tarjeta div[style*="height: 300px"],
+    .tarjeta div[style*="height: 280px"],
+    .tarjeta div[style*="height: 350px"] {
+        height: 220px !important;
+    }
+
+    /* ===== PÁGINAS DE ERROR (403, 404, 500) ===== */
+    .tarjeta[style*="max-width: 600px"] {
+        margin-top: 16px !important;
+        padding: 24px 16px !important;
+    }
+
+    .tarjeta[style*="max-width: 600px"] h2 {
+        font-size: 1.2rem !important;
+    }
+
+    .tarjeta[style*="max-width: 600px"] p {
+        font-size: 0.95rem !important;
+    }
+
+    .tarjeta[style*="max-width: 600px"] svg {
+        width: 56px !important;
+        height: 56px !important;
+    }
+
+    /* ===== LOGIN ===== */
+    .tarjeta-login {
+        width: 100%;
+        margin: 16px;
+        padding: 24px 20px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .pagina-login {
+        padding: 16px;
+        align-items: flex-start;
+        padding-top: 10vh;
+    }
+
+    /* ===== COMPROBANTE ===== */
+    .comprobante {
+        padding: 14px;
+        margin: 0;
+        max-width: 100%;
+    }
+
+    /* ===== MINIATURA DE PRODUCTO ===== */
+    .miniatura-producto {
+        width: 36px;
+        height: 36px;
+    }
+
+    /* ===== PULL-TO-REFRESH FEEL ===== */
+    .zona-contenido {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* ===== ANIMACIONES SUAVES ===== */
+    .tarjeta,
+    .tarjeta-kpi,
+    .tabla-datos tr {
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .tarjeta-kpi:active {
+        transform: scale(0.98);
+    }
+}
+
+/* ===== TABLET (768px - 1024px) ===== */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .encabezado {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .cuadricula--4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tarjeta-kpi__valor {
+        font-size: 24px;
+    }
+}
+
+/* ===== SAFE AREA PARA NOTCH (iPhone X+) ===== */
+@supports (padding-top: env(safe-area-inset-top)) {
+    @media (max-width: 767px) {
+        .encabezado {
+            padding-top: env(safe-area-inset-top);
+            height: calc(56px + env(safe-area-inset-top));
+        }
+
+        .barra-lateral {
+            padding-top: env(safe-area-inset-top);
+        }
+
+        .zona-contenido {
+            padding-bottom: calc(24px + env(safe-area-inset-bottom));
+        }
+    }
+}

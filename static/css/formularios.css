@@ -129,6 +129,17 @@ textarea.campo-formulario {
     font-size: var(--tamano-fuente-pequena);
 }
 
+.boton--fantasma {
+    background-color: transparent;
+    color: var(--color-primario);
+    border-color: transparent;
+}
+
+.boton--fantasma:hover {
+    background-color: var(--color-fondo);
+    border-color: var(--color-borde);
+}
+
 .mensajes-formulario {
     margin-bottom: var(--espacio-md);
 }
